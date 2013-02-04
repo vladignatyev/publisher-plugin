@@ -11,6 +11,7 @@ package interfaces
 
 		function export():void;
 		
+		function fitViewportToAssetComposition(assetComposition:AssetComposition):void;
 		function setAssetState(assetComposition:AssetComposition):void;
 		function getCurrentAssetComposition():AssetComposition;
 		function pushAssetState():void;

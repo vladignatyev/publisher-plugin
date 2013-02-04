@@ -66,13 +66,13 @@
 			
 			protected function fileListDG_itemClickHandler(event:ListEvent):void
 			{
-				saveButton.enabled = true;
+				saveButton.enabled = true; // todo: непонятно в каокй же момент кнопку делать активной
 			}
 			
 			protected function fileListDG_itemDoubleClickHandler(event:ListEvent):void
 			{
 				controller.changeCompositionToIndex(event.rowIndex);
-				saveButton.enabled = true;
+				saveButton.enabled = true;// todo: непонятно в каокй же момент кнопку делать активной
 			}
 			
 			protected function addNewAsset_clickHandler(event:MouseEvent):void

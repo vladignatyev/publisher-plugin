@@ -99,6 +99,10 @@ package managers
 		public function setAssetState(newState:AssetComposition):void {
 			appController.setAssetState(newState);
 		}
+		
+		public function fitViewportToAssetComposition(assetComposition:AssetComposition):void {
+			appController.fitViewportToAssetComposition(assetComposition);
+		}
 
 
 		public function attach():void
@@ -130,7 +134,7 @@ package managers
 		}
 		
 		public function changeCompositionToIndex(index:Number):void {
-			setAssetState((model.dataGridProvider.getItemAt(index) as PublishingItem).assetComposition);
+			fitViewportToAssetComposition((model.dataGridProvider.getItemAt(index) as PublishingItem).assetComposition);
 		}
 		
 		public function updateNthAssetWithCurrentComposition(i:Number):void {

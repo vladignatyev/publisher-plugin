@@ -181,14 +181,19 @@ package managers.platforms
 				}
 				
 			}
-			
-//			app.activeDocument.activeView.zoom = 1.0;
+		}
+		
+		public function fitViewportToAssetComposition(assetComposition:AssetComposition):void {
+			setAssetState(assetComposition);
+			//			app.activeDocument.activeView.zoom = 1.0;
 			var artBoardRect:Array = app.activeDocument.artboards.index(assetComposition.artboardIndex).artboardRect;
-
 			
-			var center:Array = app.activeDocument.convertCoordinate([(artBoardRect[2]-artBoardRect[0])/2,(artBoardRect[3]-artBoardRect[1])/2], 
+			
+			var center:Array = app.activeDocument.convertCoordinate([(artBoardRect[2]-artBoardRect[0])/2,
+				(artBoardRect[3]-artBoardRect[1])/2], 
 				CoordinateSystem.ARTBOARDCOORDINATESYSTEM, CoordinateSystem.DOCUMENTCOORDINATESYSTEM);
 			app.activeDocument.activeView.centerPoint = [center[0], center[1]];
+			
 		}
 		
 		/***

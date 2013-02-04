@@ -119,5 +119,9 @@ package managers.platforms
 			return null;
 		}
 		
+		public function fitViewportToAssetComposition(assetComposition:AssetComposition):void {
+			throw new Error("Not implemented");
+		}
+		
 	}
 }
