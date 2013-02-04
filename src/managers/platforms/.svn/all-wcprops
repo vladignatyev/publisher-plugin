@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/publisher-plugin/!svn/ver/37/trunk/Publisher/src/managers/platforms
+END
+InDesignController.as
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/publisher-plugin/!svn/ver/29/trunk/Publisher/src/managers/platforms/InDesignController.as
+END
+PhotoshopController.as
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/publisher-plugin/!svn/ver/37/trunk/Publisher/src/managers/platforms/PhotoshopController.as
+END
+IllustratorController.as
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/publisher-plugin/!svn/ver/37/trunk/Publisher/src/managers/platforms/IllustratorController.as
+END

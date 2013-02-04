@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<csxs:CSXSWindowedApplication xmlns:csxs="com.adobe.csxs.core.*"
+							  xmlns:mx="http://www.adobe.com/2006/mxml"
+							  width="250" height="240" minWidth="250" minHeight="240"
+							  applicationComplete="onApplicationComplete()" close="onClose()"
+							  color="0x000000" historyManagementEnabled="false"
+							  horizontalScrollPolicy="off" layout="absolute" showStatusBar="false"
+							  usePreloader="false"
+							  focusOut="csxswindowedapplication2_focusOutHandler(event)"
+							  >
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.csawlib.illustrator.Illustrator;
+			import com.adobe.illustrator.*;
+			
+			import flash.filesystem.File;
+			
+			import managers.*;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.ToolTip;
+			import mx.events.AIREvent;
+			import mx.events.CollectionEvent;
+			import mx.events.DataGridEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.managers.ToolTipManager;
+			
+			[Bindable]
+			private var model:AppModel = null; 
+			private var controller:AppController = null;
+			private var watcher:AppLifeCycle = null;
+			
+			
+			private function onApplicationComplete():void{
+				model = AppModel.getInstance();
+				model.dataGridProvider = dataGridProvider;
+				model.readyState();
+				trace('ononApplicationComplete');
+				formatNamesCB.selectedIndex = 2;
+				controller = AppController.getInstance();
+				watcher = AppLifeCycle.getInstance();
+				
+				ToolTipManager.showDelay = 1000;
+				ToolTipManager.hideDelay = 10000;
+				controller.fileListDG = fileListDG;
+				controller.documentActivated();		
+								
+			}
+			
+			private function onClose():void{
+				controller.detach();
+			}			
+			
+			private function pathInput_changeHandler(event:Event):void
+			{
+				
+			}
+			
+			// Вызывается как-то часто по событию ValueCommit. 
+			// Нужно апдейтить по изменению selectedIndex
+			private function formatNamesCB_changeHandler(event:Event):void
+			{
+				model.formatName = formatNamesCB.selectedItem.label;				
+			}
+			
+			protected function fileListDG_itemClickHandler(event:ListEvent):void
+			{
+				saveButton.enabled = true;
+			}
+			
+			protected function fileListDG_itemDoubleClickHandler(event:ListEvent):void
+			{
+				controller.changeCompositionToIndex(event.rowIndex);
+				saveButton.enabled = true;
+			}
+			
+			protected function addNewAsset_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				controller.newFile();
+				controller.changeCompositionToLastCreated();
+				fileListDG.selectedIndex = model.dataGridProvider.length - 1;
+				fileListDG.setFocus();
+				fileListDG.editedItemPosition = {rowIndex:model.dataGridProvider.length - 1, columnIndex:2};
+			}
+			
+			protected function fileListDG_itemFocusOutHandler(event:DataGridEvent):void
+			{
+				// TODO Auto-generated method stub
+				//				controller.restoreComposition();
+				saveButton.enabled = false;
+			}
+			
+			public function hyphenate(item:Object, column:DataGridColumn):String {
+				var title: String  = item[column.dataField].toString();
+				if (column.width  < column.minWidth) {
+					return "..."  + title.substr(-14);					
+				} 
+				return title;
+				
+			}
+			
+			protected function csxswindowedapplication1_focusOutHandler(event:FocusEvent):void
+			{
+				// TODO Auto-generated method stub
+				saveButton.enabled = false;
+				//				fileListDG.selectedIndex = -1;
+			}
+			
+			protected function csxswindowedapplication1_applicationActivateHandler(event:AIREvent):void
+			{
+				// TODO Auto-generated method stub
+				trace("activate");
+			}
+			
+			protected function dataGridProvider_collectionChangeHandler(event:CollectionEvent):void
+			{
+				// TODO Auto-generated method stub
+				if (!model) return;
+				model.gridChanged();
+				if (model.dataGridProvider) {
+					fileListDG.validateNow();
+					fileListDG.scrollToIndex(model.dataGridProvider.length);
+				}
+			}
+			
+			public function selectSaveDir(event:*):void {
+				try {
+				var f:File = new File();
+				f.browseForDirectory("Select directory to export your assets...");
+				f.addEventListener(Event.SELECT, function(event:Event):void {
+					model.pathToPublish = f.nativePath;
+					model.save();
+				});
+				} catch (e:Error) {
+					trace('[Exception]' + e);					
+				}
+				
+			}
+			
+			
+			protected function pathInput_focusOutHandler(event:FocusEvent):void
+			{
+				// TODO Auto-generated method stub
+				model.pathToPublish = pathInput.text;
+				model.save();
+			}
+			
+			protected function csxswindowedapplication2_focusOutHandler(event:FocusEvent):void
+			{
+				model.pathToPublish = pathInput.text;
+				model.save();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Style source="assets/css/style.css"/>
+	<!--
+	3. Отслежитьва события изменения слоев (удаление, добавление, сохранение).
+	4. сохранять настройки и список файлов для каждого иллюстраторского файла. 
+	(если артборды и слои поменяли в другом иллюстраторе нужно иконкой показать, что сбились настройки)
+	-->
+	
+	<mx:Box id="welcomeView" 
+			visible="{model.state == 'welcome'}" 
+			includeInLayout="{this.visible}" 
+			horizontalCenter="0" 
+			verticalCenter="0">
+		<mx:VBox>
+			<mx:Label text="Welcome!"/>
+			<mx:Label text="Set up assets now to start working."/>
+			<mx:Button label="Import artboards" click="model.setupDefault()"/>
+		</mx:VBox>
+	</mx:Box>
+	
+	
+	<mx:Box id="noDataView" 
+			visible="{model.state == 'disabled'}" 
+			includeInLayout="{this.visible}" 
+			horizontalCenter="0" 
+			verticalCenter="0">
+		<mx:Label text="Open document to export assets"/>
+	</mx:Box>
+	
+	<mx:Box id="mainView" 
+			width="100%" height="100%"
+			visible="{model.state == 'normal'}" 
+			includeInLayout="{this.visible}">
+		
+		<mx:VBox width="100%" height="100%" verticalGap="3">
+			<mx:DataGrid id="fileListDG" width="100%" height="100%" backgroundAlpha="0.0"
+						 borderStyle="none" doubleClickEnabled="true" editable="true"
+						 horizontalGridLineColor="0x999999" horizontalGridLines="true"
+						 itemClick="fileListDG_itemClickHandler(event)"
+						 itemDoubleClick="fileListDG_itemDoubleClickHandler(event)"
+						 itemFocusOut="fileListDG_itemFocusOutHandler(event)" resizableColumns="true"
+						 rollOverColor="0xE0E0E0" rowCount="{model.dataGridProvider.length}"
+						 selectionColor="0x3399FF" selectionDuration="0" showHeaders="false"
+						 textSelectedColor="0xFFFFFF" verticalGridLineColor="0xB2B2B2"
+						 verticalGridLines="false"
+						 >
+				<mx:ArrayCollection id="dataGridProvider" collectionChange="dataGridProvider_collectionChangeHandler(event)"/>
+				<mx:columns>
+					<mx:DataGridColumn width="18" dataField="isPublished" editable="false" headerText="">
+						<mx:itemRenderer> 
+							<mx:Component> 
+								<mx:Box paddingLeft="3">
+									<mx:CheckBox borderColor="0xA0A0A0"
+												 click="data.isPublished=!data.isPublished"
+												 fillColors="0xFFFFFF 0xFFFFFF" 
+												 highlightAlphas="0, 0"
+												 selected="{data.isPublished}"/>
+								</mx:Box>
+							</mx:Component>                         
+						</mx:itemRenderer> 
+					</mx:DataGridColumn>
+					<mx:DataGridColumn dataField="artboardName" editable="false" headerText="Artboard"
+									   labelFunction="hyphenate"/>
+					<mx:DataGridColumn dataField="filename" dataTipField="filename" editable="true"
+									   headerText="Output Filename"/>
+					<mx:DataGridColumn dataField="dimensionsString" editable="false"
+									   headerText="Dimensions"/>
+				</mx:columns>
+			</mx:DataGrid>
+			
+			
+				
+				<mx:HRule width="100%" shadowColor="0xCCCCCC" strokeColor="0x999999"/>
+				
+				<mx:HBox width="100%">
+					<mx:TextInput id="pathInput" left="16" right="6" width="100%" height="20"
+								  change="pathInput_changeHandler(event)"
+								  editable="true" fontSize="9"
+								  text="{model.pathToPublish != null?model.pathToPublish:''}"
+								  focusOut="pathInput_focusOutHandler(event)"
+								  />
+					<mx:Button label="..." click="selectSaveDir(event)"/>
+					
+					<mx:ComboBox id="formatNamesCB" visible="false" width="80"
+								 change="formatNamesCB_changeHandler(event)"
+								 dataProvider="{model.formatNames}" includeInLayout="false"
+								 valueCommit="formatNamesCB_changeHandler(event)"/>			
+					
+				</mx:HBox>		
+				
+				<mx:HRule width="100%" shadowColor="0xCCCCCC" strokeColor="0x999999"/>
+				
+				<mx:HBox width="100%" horizontalGap="2" paddingBottom="1">
+					<mx:Button width="80" height="16" label="Publish" click="controller.export()"
+							   toolTip="Publish assets"/>
+					
+					<mx:Button id="saveButton" width="80" height="16" label="Update"
+							   click="controller.updateNthAssetWithCurrentComposition(fileListDG.selectedIndex)"
+							   toolTip="Save current composition to selected asset"/>
+					<mx:Button width="30" height="16" click="addNewAsset_clickHandler(event)"
+							   disabledSkin="@Embed(source='assets/icons/new_disabled.png')"
+							   downSkin="@Embed(source='assets/icons/new_down.png')"
+							   overSkin="@Embed(source='assets/icons/new_over.png')" toolTip="New File"
+							   upSkin="@Embed(source='assets/icons/new.png')"/>
+					<mx:Button width="30" height="16"
+							   click="controller.deleteSelectedFile(fileListDG.selectedItem, fileListDG.selectedIndex)"
+							   disabledSkin="@Embed(source='assets/icons/delete_disabled.png')"
+							   downSkin="@Embed(source='assets/icons/delete_down.png')"
+							   enabled="{model.dataGridProvider.length &gt; 0}"
+							   overSkin="@Embed(source='assets/icons/delete_over.png')"
+							   toolTip="Delete File" upSkin="@Embed(source='assets/icons/delete.png')"/>
+					
+				</mx:HBox>
+			
+		</mx:VBox>
+		
+		
+	</mx:Box>
+	
+</csxs:CSXSWindowedApplication>

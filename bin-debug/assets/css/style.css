@@ -1,0 +1,13 @@
+/* CSS file */
+
+ToolTip { 
+	cornerRadius: 0;
+	color: #000000;
+	backgroundColor: #FFFFE1;
+	dropShadowEnabled: false;
+	borderColor: #646464;
+	borderStyle:solid;
+	border-skin: ClassReference('mx.skins.halo.HaloBorder');
+	border-thickness: 1;
+	buttonHeight: 10;
+}
