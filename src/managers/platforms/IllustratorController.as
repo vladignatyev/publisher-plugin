@@ -76,49 +76,48 @@ package managers.platforms
 		}
 		
 		public function export():void{
-//			fillDefaultFilesList();
-			
 			var file:File;
 			var format:ExportType;
 			var exportOptions:*;
 			
-			
-			switch(model.formatName){
-				case "JPEG":
-					format = ExportType.JPEG;
-					exportOptions = new ExportOptionsJPEG();
-					exportOptions.artBoardClipping = true;
-					exportOptions.antiAliasing = true;
-					break;
-//
-				case "GIF":
-					format = ExportType.GIF;
-					exportOptions = new ExportOptionsGIF();
-					exportOptions.colorCount = 256;
-					exportOptions.antiAliasing = false;
-					exportOptions.artBoardClipping = true;
-					exportOptions.transparency = true;
-					break;
-
-				case "PNG24":
-				default:
-					format = ExportType.PNG24;
-					exportOptions = new ExportOptionsPNG24();
-					exportOptions.antiAliasing = true;
-					exportOptions.transparency = true;
-					exportOptions.artBoardClipping = true;
-					break;
-			}
-
 			pushAssetState();
 			
 			for (var i:int=0; i < model.dataGridProvider.length; i++) {
 				var item:PublishingItem = model.dataGridProvider.getItemAt(i) as PublishingItem;
+				
+				
+				switch(item.fileType){
+					case PublishingItem.JPG:
+						format = ExportType.JPEG;
+						exportOptions = new ExportOptionsJPEG();
+						exportOptions.artBoardClipping = true;
+						exportOptions.antiAliasing = true;
+						break;
+					//
+//					case "GIF":
+//						format = ExportType.GIF;
+//						exportOptions = new ExportOptionsGIF();
+//						exportOptions.colorCount = 256;
+//						exportOptions.antiAliasing = false;
+//						exportOptions.artBoardClipping = true;
+//						exportOptions.transparency = true;
+//						break;
+					
+					case PublishingItem.PNG24:
+					default:
+						format = ExportType.PNG24;
+						exportOptions = new ExportOptionsPNG24();
+						exportOptions.antiAliasing = true;
+						exportOptions.transparency = true; //todo: get transparency from PublishingItem
+						exportOptions.artBoardClipping = true;
+						break;
+				}
+				
 				if (!item.isPublished) continue;
 				
 				setAssetState(item.assetComposition);
 				
-				file =  new File([model.pathToPublish, item.filename].join('/'));
+				file =  new File([model.pathToPublish, item.systemFilename].join('/'));
 				app.activeDocument.exportFile(file, format, exportOptions);
 			}
 

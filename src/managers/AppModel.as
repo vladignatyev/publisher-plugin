@@ -210,13 +210,9 @@ package managers
 
 		
 		public function addNewFile(name:String, assetComposition:AssetComposition):void {
-			dataGridProvider.addItem(new PublishingItem(name, _activeDocument, "", true, assetComposition));
+			dataGridProvider.addItem(new PublishingItem(name, PublishingItem.PNG24, true, _activeDocument, "", true, assetComposition));
 			save();
 		}
-		
-	
-		
-		
 		
 		private function getFilename(customName:String = ""):String {
 			var name:String = customName;
@@ -227,7 +223,8 @@ package managers
 				}
 				name = n;
 			}
-			return [name, getExtension()].join('.');
+//			return [name, getExtension()].join('.');
+			return name;
 		}
 		
 		public function addNewDefaultFile(assetComposition:AssetComposition):void {
@@ -282,13 +279,13 @@ package managers
 				"publishingItems": new Array(length)
 			};
 			
-			trace("pathToPublish:" + pathToPublish);
-			
 			for (var i:Number = 0; i < length; i++) {
 				var item: PublishingItem = dataGridProvider.getItemAt(i) as PublishingItem;
 				result.publishingItems[i] = {
 					"isPublished":item.isPublished,
 					"filename": item.filename,
+					"fileType": item.fileType,
+					"transparency": item.transparency,
 					"icon": item.icon,
 					"artboardName":item.artboardName,
 					"assetComposition":_inflator.flattenAssetComposition(item.assetComposition)
@@ -315,7 +312,18 @@ package managers
 			lockSavingOnUpdates();
 			dataGridProvider.disableAutoUpdate();
 			for (var i:Number=0; i < dO.publishingItems.length; i++) {
-				dataGridProvider.addItem(new PublishingItem(dO.publishingItems[i].filename, activeDocument, 
+				
+				const filename:String = dO.publishingItems[i]["filename"];
+				var fileType:String = dO.publishingItems[i]["fileType"];
+				trace('Stored transparency');
+				
+				trace(dO.publishingItems[i]["transparency"]);
+				
+				var transparency:Boolean = dO.publishingItems[i]["transparency"];
+				
+				if (!fileType) fileType = PublishingItem.PNG24;
+				
+				dataGridProvider.addItem(new PublishingItem(filename, fileType, transparency, activeDocument, 
 					dO.publishingItems[i].icon, dO.isPublished, _inflator.restoreAssetComposition(dO.publishingItems[i].assetComposition)));
 			}
 			dataGridProvider.enableAutoUpdate();

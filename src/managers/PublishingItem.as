@@ -13,11 +13,15 @@ package managers
 	[Bindable]
 	public class PublishingItem
 	{
+		public static const PNG24:String = "png24";
+		public static const JPG:String = "jpg";
+		
 		public var filename:String = "";
+		public var fileType:String = PublishingItem.PNG24;
+		
+		public var transparency:Boolean = true;
+		
 		public var isPublished:Boolean = true;	
-		
-//		public var fileType:ExportType = ExportType.PNG24; //RESERVED FIELD
-		
 		
 		public var assetComposition:AssetComposition;
 		
@@ -27,7 +31,9 @@ package managers
 		
 		public function PublishingItem (
 			filename:String,
-activeDocument: *,
+			fileType:String,
+			transparency:Boolean,
+			activeDocument: *,
 			icon:String = "",
 			isPublished:Boolean = true,
 			layerComposition:AssetComposition = null
@@ -36,6 +42,14 @@ activeDocument: *,
 			this.filename = filename;
 			this.icon = icon;
 			this.assetComposition = layerComposition;
+			this.fileType = fileType;
+			this.transparency = transparency;
+			
+		}
+		
+		public function get systemFilename():String {
+			var extension:String = fileType == PublishingItem.JPG?'jpg':'png';
+			return this.filename + '.' + extension;
 		}
 		
 		public function get artboardName():String {
@@ -45,7 +59,7 @@ activeDocument: *,
 		public function get dimensionsString():String {
 			if (assetComposition && _activeDocument.artboards.index(assetComposition.artboardIndex)) {
 				var dimensions:* = ArtboardUtils.getDimension(_activeDocument.artboards.index(assetComposition.artboardIndex));
-				return [Math.round(dimensions.artboardWidth), "×", Math.round(dimensions.artboardHeight), "px"].join('');
+				return [Math.round(dimensions.artboardWidth), "×", Math.round(dimensions.artboardHeight)].join('');
 			} 
 			return "";
 		}
