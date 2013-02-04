@@ -11,6 +11,8 @@ package interfaces
 
 		function export():void;
 		
+		function changeArtboardToComposition(assetComposition:AssetComposition):void;
+		
 		function fitViewportToAssetComposition(assetComposition:AssetComposition):void;
 		function setAssetState(assetComposition:AssetComposition):void;
 		function getCurrentAssetComposition():AssetComposition;

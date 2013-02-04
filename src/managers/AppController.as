@@ -103,6 +103,10 @@ package managers
 		public function fitViewportToAssetComposition(assetComposition:AssetComposition):void {
 			appController.fitViewportToAssetComposition(assetComposition);
 		}
+		
+		public function changeArtboardToComposition(assetComposition:AssetComposition):void {
+			appController.changeArtboardToComposition(assetComposition);
+		}
 
 
 		public function attach():void
@@ -133,8 +137,12 @@ package managers
 			changeCompositionToIndex(model.dataGridProvider.length - 1);
 		}
 		
+		public function getAssetCompositionByIndex(index:Number):AssetComposition {
+			return (model.dataGridProvider.getItemAt(index) as PublishingItem).assetComposition;
+		}
+		
 		public function changeCompositionToIndex(index:Number):void {
-			fitViewportToAssetComposition((model.dataGridProvider.getItemAt(index) as PublishingItem).assetComposition);
+			fitViewportToAssetComposition(getAssetCompositionByIndex(index));
 		}
 		
 		public function updateNthAssetWithCurrentComposition(i:Number):void {

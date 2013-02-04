@@ -123,5 +123,9 @@ package managers.platforms
 			throw new Error("Not implemented");
 		}
 		
+		public function changeArtboardToComposition(assetComposition:AssetComposition):void {
+			
+		}
+		
 	}
 }

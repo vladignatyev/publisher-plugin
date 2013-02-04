@@ -183,9 +183,13 @@ package managers.platforms
 			}
 		}
 		
+		public function changeArtboardToComposition(assetComposition:AssetComposition):void {
+			app.activeDocument.artboards.setActiveArtboardIndex(assetComposition.artboardIndex);
+		}
+		
 		public function fitViewportToAssetComposition(assetComposition:AssetComposition):void {
 			setAssetState(assetComposition);
-			//			app.activeDocument.activeView.zoom = 1.0;
+					
 			var artBoardRect:Array = app.activeDocument.artboards.index(assetComposition.artboardIndex).artboardRect;
 			
 			
@@ -193,7 +197,7 @@ package managers.platforms
 				(artBoardRect[3]-artBoardRect[1])/2], 
 				CoordinateSystem.ARTBOARDCOORDINATESYSTEM, CoordinateSystem.DOCUMENTCOORDINATESYSTEM);
 			app.activeDocument.activeView.centerPoint = [center[0], center[1]];
-			
+			app.activeDocument.activeView.zoom = 1.0;
 		}
 		
 		/***

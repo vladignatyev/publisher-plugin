@@ -319,9 +319,10 @@ package managers
 				
 				trace(dO.publishingItems[i]["transparency"]);
 				
-				var transparency:Boolean = dO.publishingItems[i]["transparency"];
+				var transparency:* = dO.publishingItems[i]["transparency"];
 				
 				if (!fileType) fileType = PublishingItem.PNG24;
+				if (transparency === undefined) transparency = true;
 				
 				dataGridProvider.addItem(new PublishingItem(filename, fileType, transparency, activeDocument, 
 					dO.publishingItems[i].icon, dO.isPublished, _inflator.restoreAssetComposition(dO.publishingItems[i].assetComposition)));

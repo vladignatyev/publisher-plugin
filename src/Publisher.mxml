@@ -67,6 +67,7 @@
 			protected function fileListDG_itemClickHandler(event:ListEvent):void
 			{
 				saveButton.enabled = true; // todo: непонятно в каокй же момент кнопку делать активной
+				controller.changeArtboardToComposition(controller.getAssetCompositionByIndex(event.rowIndex));
 			}
 			
 			protected function fileListDG_itemDoubleClickHandler(event:ListEvent):void
@@ -235,7 +236,7 @@
 					<mx:DataGridColumn dataField="fileType" dataTipField="fileType" editable="false"
 									   headerText="FILE TYPE" width="100"
 									   >
-						<mx:itemRenderer> 
+<!--						<mx:itemRenderer> 
 							<mx:Component> 
 								<mx:Box paddingLeft="3">
 									<mx:Script>
@@ -262,7 +263,7 @@
 									</mx:ComboBox>
 								</mx:Box>
 							</mx:Component>                         
-						</mx:itemRenderer> 
+						</mx:itemRenderer>--> 
 						</mx:DataGridColumn>
 					<mx:DataGridColumn dataField="dimensionsString" editable="false"
 									   headerText="DIMENSIONS"/>
