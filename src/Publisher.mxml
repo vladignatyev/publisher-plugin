@@ -299,19 +299,23 @@
 					<mx:Button id="saveButton" width="80" height="16" label="Update"
 							   click="controller.updateNthAssetWithCurrentComposition(fileListDG.selectedIndex)"
 							   toolTip="Save current composition to selected asset"/>
+					
+					<mx:Spacer width="100%" />
+					
 					<mx:Button id="addNewAssetButton" 
 						width="30" height="16" click="addNewAsset_clickHandler(event)"
 							   disabledSkin="@Embed(source='assets/icons/new_disabled.png')"
 							   downSkin="@Embed(source='assets/icons/new_down.png')"
 							   overSkin="@Embed(source='assets/icons/new_over.png')" toolTip="New File"
 							   upSkin="@Embed(source='assets/icons/new.png')"/>
-					<mx:Button width="30" height="16"
+					<mx:Button width="30" height="16" right="12"
 							   click="controller.deleteSelectedFile(fileListDG.selectedItem, fileListDG.selectedIndex)"
 							   disabledSkin="@Embed(source='assets/icons/delete_disabled.png')"
 							   downSkin="@Embed(source='assets/icons/delete_down.png')"
 							   enabled="{model.dataGridProvider.length &gt; 0}"
 							   overSkin="@Embed(source='assets/icons/delete_over.png')"
 							   toolTip="Delete File" upSkin="@Embed(source='assets/icons/delete.png')"/>
+
 					
 				</mx:HBox>
 			
