@@ -3,6 +3,7 @@ package managers
 	import com.adobe.csawlib.CSHostObject;
 	import com.adobe.csawlib.illustrator.IllustratorHostObject;
 	import com.adobe.csxs.core.CSXSInterface;
+	import com.adobe.csxs.events.MenuClickEvent;
 	import com.adobe.csxs.types.AppSkinInfo;
 	import com.adobe.csxs.types.HostEnvironment;
 	import com.adobe.csxs.types.SyncRequestResult;
@@ -45,6 +46,7 @@ package managers
 		[Bindable]
 		public var skin:AppSkinInfo;
 		
+		
 		public function AppController() {
 			switch(model.hostName){
 				case "illustrator":
@@ -64,6 +66,7 @@ package managers
 				hostEnv = result.data as HostEnvironment;
 				skin = hostEnv.appSkinInfo;
 			}
+			
 		}
 		
 		public static function getInstance():AppController 

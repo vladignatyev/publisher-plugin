@@ -3,7 +3,7 @@
 							  xmlns:mx="http://www.adobe.com/2006/mxml"
 							  width="250" height="240" minWidth="250" minHeight="240"
 							  applicationComplete="onApplicationComplete()" close="onClose()"
-							  color="0x000000" historyManagementEnabled="false"
+							  historyManagementEnabled="false"
 							  horizontalScrollPolicy="off" layout="absolute" showStatusBar="false"
 							  usePreloader="false"
 							  focusOut="csxswindowedapplication2_focusOutHandler(event)"
@@ -37,6 +37,7 @@
 				model.dataGridProvider = dataGridProvider;
 				model.readyState();
 				trace('ononApplicationComplete');
+				
 				formatNamesCB.selectedIndex = 2;
 				controller = AppController.getInstance();
 				watcher = AppLifeCycle.getInstance();
@@ -46,6 +47,8 @@
 				controller.fileListDG = fileListDG;
 				controller.documentActivated();		
 								
+				styleDeclaration.setStyle("backgroundColor", "0xFFFFFF");
+//				{controller.skin.appBarBackgroundColor}
 			}
 			
 			private function onClose():void{
@@ -158,14 +161,9 @@
 		]]>
 	</mx:Script>
 	
-	<mx:Style source="assets/css/style.css"/>
-	<!--
-	3. Отслежитьва события изменения слоев (удаление, добавление, сохранение).
-	4. сохранять настройки и список файлов для каждого иллюстраторского файла. 
-	(если артборды и слои поменяли в другом иллюстраторе нужно иконкой показать, что сбились настройки)
-	-->
-	
-	<mx:Box id="welcomeView" 
+	<!--<mx:Style source="assets/css/style.css"/>	-->
+
+	<mx:Box id="welcomeView"
 			visible="{model.state == 'welcome'}" 
 			includeInLayout="{this.visible}" 
 			horizontalCenter="0" 
@@ -178,7 +176,7 @@
 	</mx:Box>
 	
 	
-	<mx:Box id="noDataView" 
+	<mx:Box id="noDataView"
 			visible="{model.state == 'disabled'}" 
 			includeInLayout="{this.visible}" 
 			horizontalCenter="0" 
@@ -199,20 +197,19 @@
 						 borderStyle="none" 
 						 doubleClickEnabled="true" 
 						 editable="true"
-						 horizontalGridLineColor="0x999999" 
-						 horizontalGridLines="true"
 						 itemClick="fileListDG_itemClickHandler(event)"
 						 itemDoubleClick="fileListDG_itemDoubleClickHandler(event)"
 						 itemFocusOut="fileListDG_itemFocusOutHandler(event)" 
 						 resizableColumns="true"
 						 rollOverColor="0xE0E0E0" 
 						 rowCount="{model.dataGridProvider.length}"
-						 selectionColor="0x3399FF" 
+						 selectionColor="0xC2D8ED" 
 						 selectionDuration="0" 
 						 showHeaders="true"
-						 textSelectedColor="0xFFFFFF" 
+						 textSelectedColor="0x333333" 
 						 verticalGridLineColor="0xB2B2B2"
 						 verticalGridLines="false"
+						 horizontalGridLines="false"
 						 >
 				<mx:ArrayCollection id="dataGridProvider" collectionChange="dataGridProvider_collectionChangeHandler(event)"/>
 				<mx:columns>
@@ -222,7 +219,7 @@
 								<mx:Box paddingLeft="3">
 									<mx:CheckBox borderColor="0xA0A0A0"
 												 click="data.isPublished=!data.isPublished"
-												 fillColors="0xFFFFFF 0xFFFFFF" 
+												 fillColors="0x000000 0xFFFFFF" 
 												 highlightAlphas="0, 0"
 												 selected="{data.isPublished}"/>
 								</mx:Box>
@@ -308,13 +305,15 @@
 							   downSkin="@Embed(source='assets/icons/new_down.png')"
 							   overSkin="@Embed(source='assets/icons/new_over.png')" toolTip="New File"
 							   upSkin="@Embed(source='assets/icons/new.png')"/>
-					<mx:Button width="30" height="16" right="12"
+					<mx:Button width="30" height="16"
 							   click="controller.deleteSelectedFile(fileListDG.selectedItem, fileListDG.selectedIndex)"
 							   disabledSkin="@Embed(source='assets/icons/delete_disabled.png')"
 							   downSkin="@Embed(source='assets/icons/delete_down.png')"
 							   enabled="{model.dataGridProvider.length &gt; 0}"
 							   overSkin="@Embed(source='assets/icons/delete_over.png')"
 							   toolTip="Delete File" upSkin="@Embed(source='assets/icons/delete.png')"/>
+					
+					<mx:Spacer width="12" />
 
 					
 				</mx:HBox>
