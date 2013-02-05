@@ -214,7 +214,6 @@ package managers
 		
 		public function addNewFile(name:String, assetComposition:AssetComposition):void {
 			dataGridProvider.addItem(new PublishingItem(name, PublishingItem.PNG24, true, _activeDocument, "", true, assetComposition));
-			save();
 		}
 		
 		private function getFilename(customName:String = ""):String {
@@ -303,6 +302,7 @@ package managers
 		}
 		
 		public function gridChanged():void {
+			trace('SAVE from GridChanged');
 			if (!_lockedSavingOnUpdates) save();
 		}
 		
@@ -336,8 +336,8 @@ package managers
 		
 		
 		public function save():void {
+			trace('SAVE');
 			if (!metadataProvider) return;
-			activeDocument.saved = false;
 			metadataProvider.updateXMPCapabilities(activeDocument);
 			metadataProvider.saveMetadata(toXMPView().string);
 		}

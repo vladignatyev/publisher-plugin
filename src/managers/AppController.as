@@ -17,8 +17,6 @@ package managers
 	import interfaces.IAssetCompositionInflator;
 	import interfaces.IMetadataProvider;
 	
-	import managers.platforms.IllustratorController;
-	import managers.platforms.PhotoshopController;
 	
 	import mx.controls.DataGrid;
 	import mx.events.CollectionEvent;
@@ -33,7 +31,7 @@ package managers
 		
 		private var model:AppModel = AppModel.getInstance();
 
-		private var appController:CSController;
+		private var appController:IllustratorController;
 		
 
 		[Bindable]
@@ -46,10 +44,10 @@ package managers
 			switch(model.hostName){
 				case "illustrator":
 				case "ILST":	
-					appController = IllustratorController.getInstance()
+					appController = IllustratorController.getInstance() as IllustratorController;
 					break;
 				case "photoshop":
-					appController = PhotoshopController.getInstance();
+					appController = null;
 					break;
 			}			
 			

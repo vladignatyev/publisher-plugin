@@ -6,6 +6,7 @@
 							  color="0x000000" historyManagementEnabled="false"
 							  horizontalScrollPolicy="off" layout="absolute" showStatusBar="false"
 							  usePreloader="false"
+							  
 							  >
 	<mx:Script>
 		<![CDATA[
@@ -43,7 +44,11 @@
 				ToolTipManager.showDelay = 1000;
 				ToolTipManager.hideDelay = 10000;
 				controller.fileListDG = fileListDG;
-				controller.documentActivated();		
+				controller.documentActivated();
+				
+				watcher.addEventListener("documentAfterDeactivate", function(event:Event):void {
+					fileListDG.destroyItemEditor();
+				});
 								
 			}
 			
@@ -107,13 +112,13 @@
 			
 			protected function dataGridProvider_collectionChangeHandler(event:CollectionEvent):void
 			{
+				trace('COLLECTION CHANGED');
 				// TODO Auto-generated method stub
 				if (!model) return;
 				model.gridChanged();
-				if (model.dataGridProvider) {
-					fileListDG.validateNow();
-					fileListDG.scrollToIndex(model.dataGridProvider.length);
-				}
+				fileListDG.validateNow();
+				fileListDG.scrollToIndex(model.dataGridProvider.length);
+				
 			}
 			
 			public function selectSaveDir(event:*):void {
@@ -137,6 +142,13 @@
 //				model.save(); //todo: если приложение закрывается, то не приводить к model.save
 			}
 			
+			protected function importArtboardsButton_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+				model.setupDefault();
+			}
+			
 		]]>
 	</mx:Script>
 	
@@ -155,7 +167,7 @@
 		<mx:VBox>
 			<mx:Label text="Welcome!"/>
 			<mx:Label text="Set up assets now to start working."/>
-			<mx:Button label="Import artboards" click="model.setupDefault()"/>
+			<mx:Button label="Import artboards" id="importArtboardsButton" click="importArtboardsButton_clickHandler(event)"/>
 		</mx:VBox>
 	</mx:Box>
 	
