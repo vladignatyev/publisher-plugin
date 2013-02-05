@@ -35,10 +35,7 @@ package managers
 
 		private var appController:CSController;
 		
-		public function set cleanAfterSave(value:Boolean):void {
-			appController.cleanAfterSave = value;
-		}
-		
+
 		[Bindable]
 		public var hostEnv:HostEnvironment;
 		
@@ -157,16 +154,13 @@ package managers
 		}
 		
 		public function documentActivated():void {
-			if (!getActiveDocument()) return;			
+			if (!getActiveDocument()) return;		
+			if (getActiveDocument() == model.activeDocument) return;
 			model.activeDocument = getActiveDocument();
 			model.initialize();
 		}
 		
 		public var fileListDG:DataGrid;
-		
-		public function documentDeactivated():void {
-			appController.cleanAfterSave = true;
-		}
 		
 		public function appActivated():void {
 		}

@@ -22,8 +22,6 @@ package interfaces
 		function getActiveDocument():*;
 		
 		function setupDefaultModel(model:AppModel):void;
-		
-		function set cleanAfterSave(value:Boolean):void;
 	}
 	
 }

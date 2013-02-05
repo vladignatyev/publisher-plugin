@@ -2,11 +2,10 @@
 <csxs:CSXSWindowedApplication xmlns:csxs="com.adobe.csxs.core.*"
 							  xmlns:mx="http://www.adobe.com/2006/mxml"
 							  width="250" height="240" minWidth="250" minHeight="240"
-							  applicationComplete="onApplicationComplete()" close="onClose()"
+							  applicationComplete="onApplicationComplete()" 
 							  color="0x000000" historyManagementEnabled="false"
 							  horizontalScrollPolicy="off" layout="absolute" showStatusBar="false"
 							  usePreloader="false"
-							  focusOut="csxswindowedapplication2_focusOutHandler(event)"
 							  >
 	<mx:Script>
 		<![CDATA[
@@ -46,15 +45,6 @@
 				controller.fileListDG = fileListDG;
 				controller.documentActivated();		
 								
-			}
-			
-			private function onClose():void{
-				if (controller) controller.detach();
-			}			
-			
-			private function pathInput_changeHandler(event:Event):void
-			{
-				
 			}
 			
 			// Вызывается как-то часто по событию ValueCommit. 
@@ -132,7 +122,6 @@
 				f.browseForDirectory("Select directory to export your assets...");
 				f.addEventListener(Event.SELECT, function(event:Event):void {
 					model.pathToPublish = f.nativePath;
-					model.save();
 				});
 				} catch (e:Error) {
 					trace('[Exception]' + e);					
@@ -140,19 +129,12 @@
 				
 			}
 			
-			
-			protected function pathInput_focusOutHandler(event:FocusEvent):void
+			protected function pathInput_valueCommitHandler(event:FlexEvent):void
 			{
+				
 				// TODO Auto-generated method stub
 				model.pathToPublish = pathInput.text;
-				model.save();
-			}
-			
-			protected function csxswindowedapplication2_focusOutHandler(event:FocusEvent):void
-			{
-				model.pathToPublish = pathInput.text;
-				model.save(); //todo: если приложение закрывается, то не приводить к model.save
-				
+//				model.save(); //todo: если приложение закрывается, то не приводить к model.save
 			}
 			
 		]]>
@@ -276,10 +258,9 @@
 				
 				<mx:HBox width="100%">
 					<mx:TextInput id="pathInput" left="16" right="6" width="100%" height="20"
-								  change="pathInput_changeHandler(event)"
+								  valueCommit="pathInput_valueCommitHandler(event)"
 								  editable="true" fontSize="9"
 								  text="{model.pathToPublish != null?model.pathToPublish:''}"
-								  focusOut="pathInput_focusOutHandler(event)"
 								  />
 					<mx:Button label="..." click="selectSaveDir(event)"/>
 					

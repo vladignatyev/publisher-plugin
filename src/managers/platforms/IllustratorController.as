@@ -32,11 +32,6 @@ package managers.platforms
 		private static var instance:IllustratorController;
 		private static var adapter:AIEventAdapter;
 		private var _app:Application;
-		private var _cleanAfterSave:Boolean;
-		
-		public function set cleanAfterSave(value:Boolean):void {
-			_cleanAfterSave = value;
-		}
 		
 		public function getActiveDocument():* {
 			return _app.activeDocument;

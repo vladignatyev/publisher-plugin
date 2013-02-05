@@ -70,7 +70,9 @@ package managers
 		public function set pathToPublish(value:String):void {
 			if (value == _pathToPublish) return;
 			_pathToPublish = value;
-			if (activeDocument) activeDocument.saved = false;
+			if (activeDocument) {
+				save();
+			}
 		}
 		
 		public function get pathToPublish():String {
@@ -102,6 +104,7 @@ package managers
 			
 			if (!pathToPublish || pathToPublish == '')
 			{
+				
 				pathToPublish = activeDocument.fullName.parent.nativePath;
 			}
 		}
@@ -252,12 +255,12 @@ package managers
 			lockSavingOnUpdates();
 			dataGridProvider.disableAutoUpdate();
 			dataGridProvider.removeAll();
-			pathToPublish = '';
-			dataGridProvider.enableAutoUpdate();
-			unlockSavingOnUpdates();
+			_pathToPublish = '';
 			if (!activeDocument) {
 				state = 'disabled';
 			}
+			dataGridProvider.enableAutoUpdate();
+			unlockSavingOnUpdates();
 		}
 		
 		private function getExtension():String {
@@ -334,6 +337,7 @@ package managers
 		
 		public function save():void {
 			if (!metadataProvider) return;
+			activeDocument.saved = false;
 			metadataProvider.updateXMPCapabilities(activeDocument);
 			metadataProvider.saveMetadata(toXMPView().string);
 		}
