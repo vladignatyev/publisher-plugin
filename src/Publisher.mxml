@@ -36,17 +36,16 @@
 				model = AppModel.getInstance();
 				model.dataGridProvider = dataGridProvider;
 				model.readyState();
-				trace('ononApplicationComplete');
-				formatNamesCB.selectedIndex = 2;
 				controller = AppController.getInstance();
 				watcher = AppLifeCycle.getInstance();
 				
 				ToolTipManager.showDelay = 1000;
 				ToolTipManager.hideDelay = 10000;
-				controller.fileListDG = fileListDG;
+
 				controller.documentActivated();
 				
 				watcher.addEventListener("documentAfterDeactivate", function(event:Event):void {
+					model.save();
 					fileListDG.destroyItemEditor();
 				});
 								
@@ -146,7 +145,7 @@
 			{
 				// TODO Auto-generated method stub
 				
-				model.setupDefault();
+				model.importArtboards();
 			}
 			
 		]]>

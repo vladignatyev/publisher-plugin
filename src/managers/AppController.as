@@ -158,8 +158,6 @@ package managers
 			model.initialize();
 		}
 		
-		public var fileListDG:DataGrid;
-		
 		public function appActivated():void {
 		}
 	
