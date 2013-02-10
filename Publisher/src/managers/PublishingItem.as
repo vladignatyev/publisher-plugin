@@ -3,8 +3,7 @@ package managers
 	import com.adobe.illustrator.Artboard;
 	import com.adobe.illustrator.Document;
 	import com.adobe.illustrator.ExportType;
-	import com.adobe.indesign.Book;
-	
+
 	import utils.ArtboardUtils;
 
 	/**

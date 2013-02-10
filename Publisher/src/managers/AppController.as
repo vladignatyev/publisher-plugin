@@ -8,7 +8,6 @@ package managers
 	import com.adobe.csxs.types.HostEnvironment;
 	import com.adobe.csxs.types.SyncRequestResult;
 	import com.adobe.illustrator.Application;
-	import com.adobe.photoshop.Application;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -19,8 +18,6 @@ package managers
 	import interfaces.IAssetCompositionInflator;
 	import interfaces.IMetadataProvider;
 	
-	import managers.platforms.IllustratorController;
-	import managers.platforms.PhotoshopController;
 	
 	import mx.controls.DataGrid;
 	import mx.events.CollectionEvent;
@@ -50,9 +47,6 @@ package managers
 				case "illustrator":
 				case "ILST":	
 					appController = IllustratorController.getInstance()
-					break;
-				case "photoshop":
-					appController = PhotoshopController.getInstance();
 					break;
 			}			
 			

@@ -17,7 +17,7 @@
 			import flash.filesystem.File;
 			
 			import managers.*;
-			import managers.platforms.IllustratorController;
+			import managers.IllustratorController;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.ToolTip;

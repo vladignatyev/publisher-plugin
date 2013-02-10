@@ -1,10 +1,9 @@
-package managers.platforms
+package managers
 {
 	import com.adobe.csawlib.illustrator.Illustrator;
 	import com.adobe.cshostadapter.*;
 	import com.adobe.illustrator.*;
-	import com.adobe.photoshop.ExportOptions;
-	import com.adobe.photoshop.ExportOptionsIllustrator;
+	import com.dofaster.publisher.ns.PublisherNamespaceXMPContext;
 	
 	import events.FileExportEvent;
 	
@@ -19,13 +18,7 @@ package managers.platforms
 	import interfaces.IAssetCompositionInflator;
 	import interfaces.IMetadataProvider;
 	
-	import managers.AppModel;
-	import managers.AssetComposition;
-	import managers.PublishingItem;
-	
 	import mx.collections.ArrayCollection;
-	
-	import ru.magicink.publisher.ns.PublisherNamespaceXMPContext;
 	
 	import utils.ArtboardUtils;
 	
