@@ -10,11 +10,16 @@ package managers
 	import com.adobe.csxs.types.SyncRequestResult;
 	import com.adobe.illustrator.Application;
 	
+	import export.ExportOperation;
+	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.external.HostObject;
 	import flash.filesystem.File;
 	import flash.net.FileReference;
+	
+	import managers.data.AssetComposition;
+	import managers.data.PublishingItem;
 	
 	import mx.controls.DataGrid;
 	import mx.events.CollectionEvent;
@@ -154,9 +159,9 @@ package managers
 			model.clean();
 		}
 		
-		public function export():void 
+		public function export():ExportOperation 
 		{
-			appController.export();
+			return appController.export();
 		}
 		
 		

@@ -5,12 +5,17 @@ package managers
 	import com.adobe.illustrator.*;
 	import com.dofaster.publisher.ns.PublisherNamespaceXMPContext;
 	
+	import export.ExportOperation;
+	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.filesystem.File;
 	import flash.geom.Point;
 	import flash.net.FileReference;
 	import flash.utils.getQualifiedClassName;
+	
+	import managers.data.AssetComposition;
+	import managers.data.PublishingItem;
 	
 	import mx.collections.ArrayCollection;
 	
@@ -60,59 +65,22 @@ package managers
 			catch(error:Error){}
 		}
 		
-		public function export():void{
-			var file:File;
-			var format:ExportType;
-			var exportOptions:*;
+		public function export():ExportOperation {
+			const itemsToPublish:Array = [];
 			
-			pushAssetState();
-
 			for (var i:int=0; i < model.dataGridProvider.length; i++) {
-				var item:PublishingItem = model.dataGridProvider.getItemAt(i) as PublishingItem;
-				
-				switch(item.fileType){
-					case PublishingItem.JPG:
-						format = ExportType.JPEG;
-						exportOptions = new ExportOptionsJPEG();
-						exportOptions.artBoardClipping = true;
-						exportOptions.antiAliasing = true;
-						break;
-					//
-//					case "GIF":
-//						format = ExportType.GIF;
-//						exportOptions = new ExportOptionsGIF();
-//						exportOptions.colorCount = 256;
-//						exportOptions.antiAliasing = false;
-//						exportOptions.artBoardClipping = true;
-//						exportOptions.transparency = true;
-//						break;
-					
-					case PublishingItem.PNG24:
-					default:
-						format = ExportType.PNG24;
-						exportOptions = new ExportOptionsPNG24();
-						exportOptions.antiAliasing = true;
-						exportOptions.transparency = true; //todo: get transparency from PublishingItem
-						exportOptions.artBoardClipping = true;
-						break;
+				const item:PublishingItem = model.dataGridProvider.getItemAt(i) as PublishingItem;
+				if (item.isPublished) {
+					itemsToPublish.push(item);
 				}
-
-				if (!item.isPublished) continue;
-				
-				setAssetState(item.assetComposition);
-
-//				app.activeDocument.selectObjectsOnActiveArtboard();
-//				var sel:* = app.activeDocument.selection;
-//				app.activeDocument.rasterize(sel, sel.visibleBounds);
-				
-				file =  new File([model.pathToPublish, item.systemFilename].join('/'));
-				app.activeDocument.exportFile(file, format, exportOptions);
 			}
-
-			popAssetState();
+			
+			return new ExportOperation(this, itemsToPublish);
 		}
 		
-		
+		public function get activeDocument():Document {
+			return app.activeDocument;
+		}
 		
 		//todo вынести вверх по иерархии
 		private var userAssetStateStack:Vector.<AssetComposition> = new Vector.<AssetComposition>();

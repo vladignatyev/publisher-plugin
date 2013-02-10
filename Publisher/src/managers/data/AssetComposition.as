@@ -1,4 +1,4 @@
-package managers
+package managers.data
 {
 	import com.adobe.illustrator.Artboard;
 	
@@ -16,14 +16,6 @@ package managers
 		public function get artboardIndex():Number
 		{
 			return _artboardIndex;
-		}
-		
-		public function hash():String {
-			return "";
-		}
-		
-		public function areLayersIdentifyChangedWithoutPlugin(storedHash:String):Boolean {
-			return hash() == storedHash;
 		}
 	}
 }

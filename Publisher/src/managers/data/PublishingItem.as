@@ -1,4 +1,4 @@
-package managers
+package managers.data
 {
 	import com.adobe.illustrator.Artboard;
 	import com.adobe.illustrator.Document;
@@ -14,6 +14,7 @@ package managers
 	{
 		public static const PNG24:String = "png24";
 		public static const JPG:String = "jpg";
+		public static const GIF:String = "gif";
 		
 		public var filename:String = "";
 		public var fileType:String = PublishingItem.PNG24;

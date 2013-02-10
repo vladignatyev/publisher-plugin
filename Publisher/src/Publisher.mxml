@@ -11,7 +11,9 @@
 		<![CDATA[
 			import com.adobe.csawlib.illustrator.Illustrator;
 			import com.adobe.illustrator.*;
-						
+			
+			import export.ExportOperation;
+			
 			import flash.filesystem.File;
 			
 			import managers.*;
@@ -146,6 +148,16 @@
 //				model.save(); //todo: если приложение закрывается, то не приводить к model.save
 			}
 			
+			private var publishingOperation:ExportOperation;
+			
+			protected function publishButtonClick(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				publishingOperation = controller.export();
+				exportProgress.source = publishingOperation;
+				publishingOperation.publish(model.pathToPublish);
+			}
+			
 		]]>
 	</mx:Script>
 	
@@ -168,8 +180,11 @@
 	<mx:VBox id="mainView" width="100%" height="100%"
 			visible="{model.state == 'normal'}" 
 			includeInLayout="{this.visible}">
-		<mx:Box id="progressBox" width="20" height="10" backgroundColor="0xFF0000">
-		</mx:Box>
+		
+		<mx:ProgressBar id="exportProgress" 
+						width="100%" height="10" label="(%3%%) Published %1 files of %2" 
+						mode="event"
+						/>
 
 		
 		<mx:VBox width="100%" height="100%" verticalGap="3">
@@ -294,7 +309,7 @@
 				<mx:HRule width="100%" shadowColor="0xCCCCCC" strokeColor="0x999999"/>
 				
 				<mx:HBox width="100%" horizontalGap="2" paddingBottom="1">
-					<mx:Button width="80" height="16" label="Publish" click="controller.export()"
+					<mx:Button width="80" height="16" label="Publish" click="publishButtonClick(event)"
 							   toolTip="Publish assets"/>
 					
 					<mx:Button id="saveButton" width="80" height="16" label="Update"

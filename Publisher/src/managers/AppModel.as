@@ -11,6 +11,8 @@ package managers
 	import flash.external.HostObject;
 	
 	import mx.collections.ArrayCollection;
+	import managers.data.PublishingItem;
+	import managers.data.AssetComposition;
 
 	[Bindable]
 	public class AppModel extends EventDispatcher
