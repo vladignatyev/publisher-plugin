@@ -5,8 +5,6 @@ package managers
 	import com.adobe.illustrator.*;
 	import com.dofaster.publisher.ns.PublisherNamespaceXMPContext;
 	
-	import events.FileExportEvent;
-	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.filesystem.File;
@@ -14,15 +12,11 @@ package managers
 	import flash.net.FileReference;
 	import flash.utils.getQualifiedClassName;
 	
-	import interfaces.CSController;
-	import interfaces.IAssetCompositionInflator;
-	import interfaces.IMetadataProvider;
-	
 	import mx.collections.ArrayCollection;
 	
 	import utils.ArtboardUtils;
 	
-	public class IllustratorController extends EventDispatcher implements CSController, IMetadataProvider, IAssetCompositionInflator
+	public class IllustratorController extends EventDispatcher
 	{
 		private static var model:AppModel = AppModel.getInstance();
 		private static var instance:IllustratorController;
@@ -38,7 +32,7 @@ package managers
 		}
 		
 		
-		public static function getInstance():CSController {
+		public static function getInstance():IllustratorController {
 			if ( instance == null )
 			{
 				instance = new IllustratorController();
@@ -113,11 +107,6 @@ package managers
 				
 				file =  new File([model.pathToPublish, item.systemFilename].join('/'));
 				app.activeDocument.exportFile(file, format, exportOptions);
-				
-				app.redraw();
-				
-				dispatchEvent(new FileExportEvent(FileExportEvent.FILE_EXPORT));
-				
 			}
 
 			popAssetState();

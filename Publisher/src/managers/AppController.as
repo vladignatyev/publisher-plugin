@@ -16,24 +16,20 @@ package managers
 	import flash.filesystem.File;
 	import flash.net.FileReference;
 	
-	import interfaces.CSController;
-	import interfaces.IAssetCompositionInflator;
-	import interfaces.IMetadataProvider;
-	
 	import mx.controls.DataGrid;
 	import mx.events.CollectionEvent;
 	
 	/**
 	 * 
 	 * */
-	public class AppController extends EventDispatcher implements CSController
+	public class AppController extends EventDispatcher
 	{
 		
 		private static var instance:AppController;
 		
 		private var model:AppModel = AppModel.getInstance();
 
-		public var appController:CSController;
+		public var appController:IllustratorController;
 		
 
 		[Bindable]
@@ -181,9 +177,7 @@ package managers
 		{
 			appController.attach();
 			model.activeDocument = getActiveDocument();
-			model.metadataProvider = appController as IMetadataProvider;
 			model.controller = appController;
-			model.assetCompositionInflator = appController as IAssetCompositionInflator;
 		}
 		
 		public function popAssetState():void

@@ -10,10 +10,6 @@ package managers
 	import flash.events.EventDispatcher;
 	import flash.external.HostObject;
 	
-	import interfaces.CSController;
-	import interfaces.IAssetCompositionInflator;
-	import interfaces.IMetadataProvider;
-	
 	import mx.collections.ArrayCollection;
 
 	[Bindable]
@@ -22,25 +18,13 @@ package managers
 		private static var instance:AppModel;
 		
 		private var _activeDocument:*;	//todo: ебучий пиздец! нужно ряд интерфейсов сделать, чтобы отгородить от имплементации платформы, динамическую тпизацию выпилить и забыть в страшном сне
-		private var _metadataProvider:IMetadataProvider;
-		private var _inflator:IAssetCompositionInflator;
-		private var _controller:CSController;
+		private var _controller:IllustratorController;
 		
 		public function AppModel() {
 		}
 
-		public function set controller(value:CSController):void {
+		public function set controller(value:IllustratorController):void {
 			_controller = value;
-		}
-		
-		public function get metadataProvider():IMetadataProvider
-		{
-			return _metadataProvider;
-		}
-
-		public function set metadataProvider(value:IMetadataProvider):void
-		{
-			_metadataProvider = value;
 		}
 
 		public function get activeDocument():*
@@ -51,11 +35,6 @@ package managers
 		public function set activeDocument(value:*):void
 		{
 			_activeDocument = value;
-		}
-
-		public function set assetCompositionInflator(value:IAssetCompositionInflator):void
-		{
-			_inflator = value;
 		}
 
 		public static function getInstance():AppModel 
@@ -164,8 +143,8 @@ package managers
 		}
 		
 		public function restoreFromMeta():Boolean {
-			metadataProvider.updateXMPCapabilities(activeDocument);
-			var xmpView: AppModelXMPView = AppModelXMPView.fromXMPSerializedView(metadataProvider.getMetadata());
+			_controller.updateXMPCapabilities(activeDocument);
+			var xmpView: AppModelXMPView = AppModelXMPView.fromXMPSerializedView(_controller.getMetadata());
 			if (xmpView) {
 				this.fromXMPView(xmpView);
 				return true;
@@ -265,7 +244,7 @@ package managers
 					"transparency": item.transparency,
 					"icon": item.icon,
 					"artboardName":item.artboardName,
-					"assetComposition":_inflator.flattenAssetComposition(item.assetComposition)
+					"assetComposition":_controller.flattenAssetComposition(item.assetComposition)
 				};
 			}
 			
@@ -299,7 +278,7 @@ package managers
 				if (transparency === undefined) transparency = true;
 				
 				dataGridProvider.addItem(new PublishingItem(filename, fileType, transparency, activeDocument, 
-					dO.publishingItems[i].icon, dO.isPublished, _inflator.restoreAssetComposition(dO.publishingItems[i].assetComposition)));
+					dO.publishingItems[i].icon, dO.isPublished, _controller.restoreAssetComposition(dO.publishingItems[i].assetComposition)));
 			}
 			dataGridProvider.enableAutoUpdate();
 			unlockSavingOnUpdates();
@@ -307,10 +286,10 @@ package managers
 		
 		
 		public function save():void {
-			if (!metadataProvider) return;
+			if (!_controller) return;
 			activeDocument.saved = false;
-			metadataProvider.updateXMPCapabilities(activeDocument);
-			metadataProvider.saveMetadata(toXMPView().string);
+			_controller.updateXMPCapabilities(activeDocument);
+			_controller.saveMetadata(toXMPView().string);
 		}
 	}
 }

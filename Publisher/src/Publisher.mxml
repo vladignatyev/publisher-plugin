@@ -11,9 +11,7 @@
 		<![CDATA[
 			import com.adobe.csawlib.illustrator.Illustrator;
 			import com.adobe.illustrator.*;
-			
-			import events.FileExportEvent;
-			
+						
 			import flash.filesystem.File;
 			
 			import managers.*;
@@ -45,21 +43,18 @@
 				controller.fileListDG = fileListDG;
 //				controller.documentActivated();		
 				
-				
-				(controller.appController as EventDispatcher).addEventListener(FileExportEvent.FILE_EXPORT, exportFileHandler);
-				
 				styleDeclaration.setStyle("backgroundColor", "0xFFFFFF");
 			}
 			
-			private function exportFileHandler(event:Event):void {
-				trace ("fileExport");
-				trace ("");
-				
-				(controller.appController as IllustratorController).app.redraw();
-				progressBox.width += 30;
-				progressBox.validateNow();
-				(controller.appController as IllustratorController).app.redraw();
-			}
+//			private function exportFileHandler(event:Event):void {
+//				trace ("fileExport");
+//				trace ("");
+//				
+//				(controller.appController as IllustratorController).app.redraw();
+//				progressBox.width += 30;
+//				progressBox.validateNow();
+//				(controller.appController as IllustratorController).app.redraw();
+//			}
 			
 			// Вызывается как-то часто по событию ValueCommit. 
 			// Нужно апдейтить по изменению selectedIndex
