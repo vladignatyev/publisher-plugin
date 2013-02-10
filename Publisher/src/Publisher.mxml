@@ -2,7 +2,6 @@
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
 				xmlns:csxs="com.adobe.csxs.core.*"
 				width="100%" height="100%" minWidth="250" minHeight="240"
-				applicationComplete="onApplicationComplete()"
 				historyManagementEnabled="false"
 				horizontalScrollPolicy="off" layout="{ContainerLayout.ABSOLUTE}"
 				usePreloader="false"
@@ -33,7 +32,7 @@
 			private var model:AppModel = null; 
 			private var controller:AppController = null;
 			
-			private function onApplicationComplete():void{
+	/*		private function onApplicationComplete():void{
 				model = AppModel.getInstance();
 				model.dataGridProvider = dataGridProvider;
 
@@ -43,20 +42,9 @@
 				ToolTipManager.showDelay = 1000;
 				ToolTipManager.hideDelay = 10000;
 				controller.fileListDG = fileListDG;
-//				controller.documentActivated();		
 				
 				styleDeclaration.setStyle("backgroundColor", "0xFFFFFF");
 			}
-			
-//			private function exportFileHandler(event:Event):void {
-//				trace ("fileExport");
-//				trace ("");
-//				
-//				(controller.appController as IllustratorController).app.redraw();
-//				progressBox.width += 30;
-//				progressBox.validateNow();
-//				(controller.appController as IllustratorController).app.redraw();
-//			}
 			
 			// Вызывается как-то часто по событию ValueCommit. 
 			// Нужно апдейтить по изменению selectedIndex
@@ -157,12 +145,12 @@
 				exportProgress.source = publishingOperation;
 				publishingOperation.publish(model.pathToPublish);
 			}
-			
+			*/
 		]]>
 	</mx:Script>
 	
 	<mx:Style source="assets/css/style.css"/>
-
+<!--
 	<mx:Box id="welcomeView" width="100%" height="100%"
 			visible="{model.state == 'welcome'}" 
 			includeInLayout="{this.visible}" 
@@ -230,60 +218,15 @@
 							</mx:Component>                         
 						</mx:itemRenderer> 
 					</mx:DataGridColumn>
-<!--					<mx:DataGridColumn dataField="artboardName" editable="false" headerText="Artboard"
-									   labelFunction="hyphenate"/>-->
 					<mx:DataGridColumn dataField="filename" dataTipField="filename" editable="true"
 									   headerText="SCREENS"/>
 					<mx:DataGridColumn dataField="fileType" dataTipField="fileType" editable="false"
 									   headerText="FILE TYPE" width="60"
 									   >
-<!--						<mx:itemRenderer> 
-							<mx:Component> 
-								<mx:Box paddingLeft="3">
-									<mx:Script>
-										<![CDATA[
-											import managers.PublishingItem;
-											
-											import mx.events.ListEvent;
-											
-											protected function combobox1_changeHandler(event:ListEvent):void
-											{
-												// TODO Auto-generated method stub
-												(data as PublishingItem).fileType = combo.selectedItem.data; 
-											}
-											
-										]]>
-									</mx:Script>
-									<mx:ComboBox id="combo" 
-												 change="combobox1_changeHandler(event)" 
-												 selectedIndex="{[PublishingItem.PNG24, PublishingItem.JPG].indexOf((data as PublishingItem).fileType)}">
-										<mx:ArrayCollection>
-											<mx:Object label="PNG 24" data="{PublishingItem.PNG24}" />
-											<mx:Object label="JPEG" data="{PublishingItem.JPG}" />
-										</mx:ArrayCollection>
-									</mx:ComboBox>
-								</mx:Box>
-							</mx:Component>                         
-						</mx:itemRenderer>--> 
 						</mx:DataGridColumn>
 					<mx:DataGridColumn dataField="dimensionsString" editable="false"
 									   headerText="DIMENSIONS"
 									   />
-						<!--<mx:itemRenderer>
-							<mx:Component>
-								<mx:HBox width="100%" height="100%" borderColor="0xFF0000" borderStyle="solid" borderThickness="1">
-									<mx:Script>
-										<![CDATA[
-											import managers.PublishingItem;
-										]]>
-									</mx:Script>
-									<mx:Spacer width="0.1" />
-									<mx:Label text="{(data as PublishingItem).dimensionsString}" />
-									<mx:Box backgroundColor="0xFF0000" width="3" height="5" />
-								</mx:HBox>								
-							</mx:Component> 
-						</mx:itemRenderer> 
-					</mx:DataGridColumn>-->
 				</mx:columns>
 			</mx:DataGrid>
 			
@@ -333,13 +276,44 @@
 							   toolTip="Delete File" upSkin="@Embed(source='assets/icons/delete.png')"/>
 					
 					<mx:Spacer width="12" />
-
-					
 				</mx:HBox>
-			
 		</mx:VBox>
-		
-		
 	</mx:VBox>
+-->
+	
+	<mx:XML id="data">
+		<root>
+			<node label="../preview/main screens">
+				<node label="1" />
+				<node label="2" />
+				<node label="3" />
+				<node label="4" />
+			</node>
+			<node label="../preview/splash">
+				<node label="5" />
+			</node>
+		</root>
+	</mx:XML>
+	
+	<mx:Tree showRoot="false" 
+			 dataProvider="{data}" 
+			 labelField="@label" 
+			 dragEnabled="true" 
+			 dropEnabled="true" 
+			 dragMoveEnabled="true"
+			 />
+	<!--
+	<mx:AdvancedDataGrid id="adg" 
+						 width="200" height="200" 
+						 dataProvider="{data}"
+						 dragEnabled="true" 
+						 dropEnabled="true" 
+						 dragMoveEnabled="true"
+						 >
+		<mx:groupedColumns>   
+			<mx:AdvancedDataGridColumn dataField="@label"/>
+		</mx:groupedColumns>
+	</mx:AdvancedDataGrid>
+	-->
 	
 </mx:Application>
