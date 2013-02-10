@@ -3,6 +3,7 @@ package managers
 	import com.adobe.csawlib.CSHostObject;
 	import com.adobe.csawlib.illustrator.IllustratorHostObject;
 	import com.adobe.csxs.core.CSXSInterface;
+	import com.adobe.csxs.events.CSXSEvent;
 	import com.adobe.csxs.events.MenuClickEvent;
 	import com.adobe.csxs.types.AppSkinInfo;
 	import com.adobe.csxs.types.HostEnvironment;
@@ -11,13 +12,13 @@ package managers
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.external.HostObject;
 	import flash.filesystem.File;
 	import flash.net.FileReference;
 	
 	import interfaces.CSController;
 	import interfaces.IAssetCompositionInflator;
 	import interfaces.IMetadataProvider;
-	
 	
 	import mx.controls.DataGrid;
 	import mx.events.CollectionEvent;
@@ -41,9 +42,15 @@ package managers
 		[Bindable]
 		public var skin:AppSkinInfo;
 		
+		private var lifeCycle:AppLifeCycle;
 		
 		public function AppController() {
-			switch(model.hostName){
+			
+			initCSXSLifecycle();
+			
+			
+			
+			switch(AppController.computeHostName()){
 				case "illustrator":
 				case "ILST":	
 					appController = IllustratorController.getInstance()
@@ -59,6 +66,72 @@ package managers
 				skin = hostEnv.appSkinInfo;
 			}
 			
+		}
+		
+		private function initCSXSLifecycle():void {
+			lifeCycle = AppLifeCycle.getInstance();
+			lifeCycle.addEventListener("documentAfterActivate", documentActivated);
+			lifeCycle.addEventListener("documentAfterDeactivate", documentDeactivatedHandler);
+		}
+		
+		
+		private function documentDeactivatedHandler(event:CSXSEvent):void {
+			model.activeDocument = null;
+			model.state = 'disabled';
+			//			model.clean();
+
+		}		
+		
+		
+		private static function computeHostName(): String
+		{
+			var comAdobeDot:String = "com.adobe.";
+			// Seems like HostObject.available always returns true,
+			// and mainExtension is empty
+			// So unless mainExtension name is greater than bare minimum,
+			// we are probably not in HBAPI host
+			if(HostObject.available && 
+				HostObject.mainExtension != null
+				&& HostObject.mainExtension.length > comAdobeDot.length
+			)
+			{
+				var qName:String = HostObject.mainExtension;
+				
+				if(qName.indexOf(comAdobeDot) == 0)
+				{
+					// We assume something like com.adobe.somehostnamehere.STUFFWECANIGNORE::Classname
+					// as a case we want to watch out for
+					var nextSeg:String = qName.substring(qName.indexOf(comAdobeDot) + comAdobeDot.length);
+					var dotIndex:int = nextSeg.indexOf(".");
+					var colonIndex:int = nextSeg.indexOf(":");
+					var index:int = dotIndex > 0 ? dotIndex : colonIndex;
+					if(index > 0)
+					{
+						var thostName:String = nextSeg.substring(0,index);
+						return thostName;
+					} 
+					else
+					{
+						// We might have started with say com.adobe.illustrator
+						return nextSeg;
+					}
+				}
+				return "Unable to compute from HBAPI";
+			}
+			else
+			{
+				// Use CSXS interface
+				var result:SyncRequestResult = CSXSInterface.getInstance().getHostEnvironment();
+				if(SyncRequestResult.COMPLETE == result.status && result.data)
+				{
+					var host:HostEnvironment = result.data as HostEnvironment;
+					if(host.appName != null)
+					{
+						return host.appName;
+					}
+				}
+			}
+			return "Unable to compute via fallback";
 		}
 		
 		public static function getInstance():AppController 
@@ -125,7 +198,7 @@ package managers
 		
 		public function getCurrentAssetComposition():AssetComposition
 		{
-			return appController.getCurrentAssetComposition();
+			return model.getCurrentAssetComposition();
 		}
 		
 		public function changeCompositionToLastCreated():void {
@@ -151,8 +224,8 @@ package managers
 			return appController.getActiveDocument();
 		}
 		
-		public function documentActivated():void {
-//			if (!getActiveDocument()) return;		
+		public function documentActivated(event:CSXSEvent = null):void {
+			if (!getActiveDocument()) return;		
 			if (getActiveDocument() == model.activeDocument) return;
 			model.activeDocument = getActiveDocument();
 			model.initialize();
@@ -163,8 +236,5 @@ package managers
 		public function appActivated():void {
 		}
 	
-		public function setupDefaultModel(model:AppModel):void {
-			appController.setupDefaultModel(model);
-		}
 	}
 }

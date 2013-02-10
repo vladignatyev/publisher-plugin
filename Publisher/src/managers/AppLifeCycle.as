@@ -5,20 +5,17 @@ package managers
 	import com.adobe.csxs.types.*;
 	
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 	
-	import managers.AppController;
-	import managers.AppModel;
-	public class AppLifeCycle
+	public class AppLifeCycle extends EventDispatcher
 	{
 		private static var instance:AppLifeCycle;
-		private static var controller:AppController = AppController.getInstance();
-		private static var model:AppModel = AppModel.getInstance();
+
 		public static function getInstance() : AppLifeCycle 
 		{
-			if ( instance == null )
-			{
+			if (!instance) {
 				instance = new AppLifeCycle();
 				instance.start();
 			}
@@ -29,13 +26,17 @@ package managers
 		{
 			//Add CSXS "standardized" events.
 			var myCSXS:CSXSInterface = CSXSInterface.getInstance();
-			myCSXS.addEventListener("documentAfterActivate", documentAfterActivate_handler);
-//			myCSXS.addEventListener("documentBeforeDeactivate", documentBeforeDeactivate_handler);
-			myCSXS.addEventListener("documentAfterDeactivate", documentAfterDeactivate_handler);
-			myCSXS.addEventListener("applicationActivate", applicationActivate_handler);
+			myCSXS.addEventListener("documentAfterActivate", redispatch/*documentAfterActivate_handler*/);
+			myCSXS.addEventListener("documentBeforeDeactivate", redispatch);
+			myCSXS.addEventListener("documentAfterDeactivate", redispatch/*documentAfterDeactivate_handler*/);
+			myCSXS.addEventListener("applicationActivate", redispatch/*applicationActivate_handler*/);
 			
 		}
 		
+		private function redispatch(event:CSXSEvent):void {
+			dispatchEvent(event.clone());
+		}
+		/*
 		private function documentAfterActivate_handler(event:CSXSEvent):void {
 			trace('documentAfterActivate_handler');
 			controller.documentActivated();
@@ -53,6 +54,6 @@ package managers
 			controller.appActivated();
 		}
 		
-		
+		*/
 	}
 }

@@ -123,21 +123,7 @@ package managers
 			popAssetState();
 		}
 		
-		public function getCurrentAssetComposition():AssetComposition
-		{
-			var newAssetComposition:AssetComposition = new AssetComposition();
-			var artboardIndex:Number = app.activeDocument.artboards.getActiveArtboardIndex();
-			newAssetComposition.setArtboard(artboardIndex);
-			
-			var layersCount:Number = app.activeDocument.layers.length;
-			for (var i:int =0; i < layersCount; i++) {
-				var layer:* = app.activeDocument.layers.index(i); 
-				if (layer.visible) {
-					newAssetComposition.layerIndexes[layer.hostObjectDelegate] = i;
-				}
-			}
-			return newAssetComposition;
-		}
+		
 		
 		//todo вынести вверх по иерархии
 		private var userAssetStateStack:Vector.<AssetComposition> = new Vector.<AssetComposition>();
@@ -153,7 +139,7 @@ package managers
 		//todo вынести вверх по иерархии
 		public function pushAssetState():void
 		{
-			userAssetStateStack.push(getCurrentAssetComposition());
+			userAssetStateStack.push(model.getCurrentAssetComposition());
 		}
 		
 //		protected function hideAllLayers():void {
@@ -238,21 +224,7 @@ package managers
 		public function getExportPath():String {
 			return xmpContext.publisherNamespace.exportPath;
 		}
-		
-		public function setupDefaultModel(model:AppModel):void {
-			var artboards:Artboards = model.activeDocument.artboards as Artboards;
-			
-			for (var i:int = 0; i < artboards.length; i++) {
-				var artboard:Artboard = artboards.index(i);
-				var currentComposition:AssetComposition = getCurrentAssetComposition();
-				currentComposition.setArtboard(i);
-				model.addNewDefaultFile(currentComposition);
-			}
-
-			model.pathToPublish = '';
-			
-		}
-		
+				
 		public function restoreAssetComposition (flattenedComposition:*):AssetComposition {
 			var assetComposition:AssetComposition = new AssetComposition();
 			assetComposition.setArtboard(flattenedComposition.artboardIndex);

@@ -15,13 +15,11 @@ package interfaces
 		
 		function fitViewportToAssetComposition(assetComposition:AssetComposition):void;
 		function setAssetState(assetComposition:AssetComposition):void;
-		function getCurrentAssetComposition():AssetComposition;
 		function pushAssetState():void;
 		function popAssetState():void;
 		
 		function getActiveDocument():*;
-		
-		function setupDefaultModel(model:AppModel):void;
+
 	}
 	
 }

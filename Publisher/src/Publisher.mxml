@@ -32,23 +32,18 @@
 			[Bindable]
 			private var model:AppModel = null; 
 			private var controller:AppController = null;
-			private var watcher:AppLifeCycle = null;
-			
 			
 			private function onApplicationComplete():void{
 				model = AppModel.getInstance();
 				model.dataGridProvider = dataGridProvider;
-				model.readyState();
 
 				formatNamesCB.selectedIndex = 2;
 				controller = AppController.getInstance();
-				watcher = AppLifeCycle.getInstance();
-				
 				
 				ToolTipManager.showDelay = 1000;
 				ToolTipManager.hideDelay = 10000;
 				controller.fileListDG = fileListDG;
-				controller.documentActivated();		
+//				controller.documentActivated();		
 				
 				
 				(controller.appController as EventDispatcher).addEventListener(FileExportEvent.FILE_EXPORT, exportFileHandler);

@@ -3,6 +3,8 @@ package managers
 	import com.adobe.csawlib.illustrator.Illustrator;
 	import com.adobe.csxs.core.CSXSInterface;
 	import com.adobe.csxs.types.*;
+	import com.adobe.illustrator.Artboard;
+	import com.adobe.illustrator.Artboards;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -114,9 +116,40 @@ package managers
 			state = "welcome";
 		}
 		
+		public function setupDefaultModel():void {
+			var artboards:Artboards = activeDocument.artboards as Artboards;
+			
+			for (var i:int = 0; i < artboards.length; i++) {
+				var artboard:Artboard = artboards.index(i);
+				var currentComposition:AssetComposition = getCurrentAssetComposition();
+				currentComposition.setArtboard(i);
+				addNewDefaultFile(currentComposition);
+			}
+			
+			pathToPublish = '';
+			
+		}
+		
+		public function getCurrentAssetComposition():AssetComposition
+		{
+			var newAssetComposition:AssetComposition = new AssetComposition();
+			var artboardIndex:Number = activeDocument.artboards.getActiveArtboardIndex();
+			newAssetComposition.setArtboard(artboardIndex);
+			
+			var layersCount:Number = activeDocument.layers.length;
+			for (var i:int =0; i < layersCount; i++) {
+				var layer:* = activeDocument.layers.index(i); 
+				if (layer.visible) {
+					newAssetComposition.layerIndexes[layer.hostObjectDelegate] = i;
+				}
+			}
+			return newAssetComposition;
+		}
+
+		
 		public function setupDefault():void {
 			lockSavingOnUpdates();
-			_controller.setupDefaultModel(this);
+			setupDefaultModel();
 			unlockSavingOnUpdates();
 			state = "normal";
 			
@@ -139,64 +172,6 @@ package managers
 			} 
 			return false;
 		}
-		
-		//Called from the extension's onCreationComplete() function.
-		public function readyState(): void
-		{
-			this.hostName = computeHostName();
-		}		
-		
-		private static function computeHostName(): String
-		{
-			var comAdobeDot:String = "com.adobe.";
-			// Seems like HostObject.available always returns true,
-			// and mainExtension is empty
-			// So unless mainExtension name is greater than bare minimum,
-			// we are probably not in HBAPI host
-			if(HostObject.available && 
-				HostObject.mainExtension != null
-				&& HostObject.mainExtension.length > comAdobeDot.length
-			)
-			{
-				var qName:String = HostObject.mainExtension;
-				
-				if(qName.indexOf(comAdobeDot) == 0)
-				{
-					// We assume something like com.adobe.somehostnamehere.STUFFWECANIGNORE::Classname
-					// as a case we want to watch out for
-					var nextSeg:String = qName.substring(qName.indexOf(comAdobeDot) + comAdobeDot.length);
-					var dotIndex:int = nextSeg.indexOf(".");
-					var colonIndex:int = nextSeg.indexOf(":");
-					var index:int = dotIndex > 0 ? dotIndex : colonIndex;
-					if(index > 0)
-					{
-						var thostName:String = nextSeg.substring(0,index);
-						return thostName;
-					} 
-					else
-					{
-						// We might have started with say com.adobe.illustrator
-						return nextSeg;
-					}
-				}
-				return "Unable to compute from HBAPI";
-			}
-			else
-			{
-				// Use CSXS interface
-				var result:SyncRequestResult = CSXSInterface.getInstance().getHostEnvironment();
-				if(SyncRequestResult.COMPLETE == result.status && result.data)
-				{
-					var host:HostEnvironment = result.data as HostEnvironment;
-					if(host.appName != null)
-					{
-						return host.appName;
-					}
-				}
-			}
-			return "Unable to compute via fallback";
-		}
-
 		
 		///// GETTERS & SETTERS
 		public function get formatName():String
