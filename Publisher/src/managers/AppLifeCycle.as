@@ -5,16 +5,23 @@ package managers
 	import com.adobe.csxs.types.*;
 	
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 	
 	import managers.AppController;
 	import managers.AppModel;
-	public class AppLifeCycle
+
+	public class AppLifeCycle extends EventDispatcher
 	{
 		private static var instance:AppLifeCycle;
 		private static var controller:AppController = AppController.getInstance();
 		private static var model:AppModel = AppModel.getInstance();
+		
+		public function AppLifeCycle() {
+			super();
+		}
+		
 		public static function getInstance() : AppLifeCycle 
 		{
 			if ( instance == null )
@@ -45,6 +52,7 @@ package managers
 			trace('documentAfterDeactivate_handler');
 			model.activeDocument = null;
 			model.state = 'disabled';
+			dispatchEvent(event.clone());
 //			model.clean();
 		}
 		

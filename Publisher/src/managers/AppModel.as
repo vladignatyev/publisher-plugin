@@ -69,10 +69,11 @@ package managers
 		
 		public function set pathToPublish(value:String):void {
 			if (value == _pathToPublish) return;
+			
 			_pathToPublish = value;
-			if (activeDocument) {
-				save();
-			}
+			if (_lockedSavingOnUpdates) return;
+			
+			save();
 		}
 		
 		public function get pathToPublish():String {
@@ -92,6 +93,7 @@ package managers
 		public var state:String = "disabled";
 		
 		public function initialize():void {
+			clean();
 			if (!activeDocument) {
 				state = "disabled";
 				return;
@@ -99,23 +101,18 @@ package managers
 				state = "normal";
 			}
 			if (!restoreFromMeta()){
-				defaultInit();
+				state = "welcome";
 			}
 			
+			lockSavingOnUpdates();
 			if (!pathToPublish || pathToPublish == '')
 			{
-				
 				pathToPublish = activeDocument.fullName.parent.nativePath;
 			}
+			unlockSavingOnUpdates();
 		}
 		
-		public function defaultInit():void {
-			//настраиваем модель поумолчанию
-			clean();
-			state = "welcome";
-		}
-		
-		public function setupDefault():void {
+		public function importArtboards():void {
 			lockSavingOnUpdates();
 			_controller.setupDefaultModel(this);
 			unlockSavingOnUpdates();
@@ -134,11 +131,9 @@ package managers
 		public function restoreFromMeta():Boolean {
 			metadataProvider.updateXMPCapabilities(activeDocument);
 			var xmpView: AppModelXMPView = AppModelXMPView.fromXMPSerializedView(metadataProvider.getMetadata());
-			if (xmpView) {
-				this.fromXMPView(xmpView);
-				return true;
-			} 
-			return false;
+			if (!xmpView) return false;
+			fromXMPView(xmpView);
+			return true;
 		}
 		
 		//Called from the extension's onCreationComplete() function.
@@ -214,7 +209,6 @@ package managers
 		
 		public function addNewFile(name:String, assetComposition:AssetComposition):void {
 			dataGridProvider.addItem(new PublishingItem(name, PublishingItem.PNG24, true, _activeDocument, "", true, assetComposition));
-			save();
 		}
 		
 		private function getFilename(customName:String = ""):String {
@@ -255,10 +249,7 @@ package managers
 			lockSavingOnUpdates();
 			dataGridProvider.disableAutoUpdate();
 			dataGridProvider.removeAll();
-			_pathToPublish = '';
-			if (!activeDocument) {
-				state = 'disabled';
-			}
+			pathToPublish = '';
 			dataGridProvider.enableAutoUpdate();
 			unlockSavingOnUpdates();
 		}
@@ -303,21 +294,25 @@ package managers
 		}
 		
 		public function gridChanged():void {
+			trace('SAVE from GridChanged');
 			if (!_lockedSavingOnUpdates) save();
 		}
 		
 		public function fromXMPView(xmpModelView:AppModelXMPView):void {
-			clean();
+			lockSavingOnUpdates();
 			var dO:* = xmpModelView.dataObject;
 			this.formatName = dO.formatName;
 			this.pathToPublish = dO.pathToPublish;
 			
-			lockSavingOnUpdates();
+			
 			dataGridProvider.disableAutoUpdate();
 			for (var i:Number=0; i < dO.publishingItems.length; i++) {
 				
 				const filename:String = dO.publishingItems[i]["filename"];
 				var fileType:String = dO.publishingItems[i]["fileType"];
+				trace('Stored transparency');
+				
+				trace(dO.publishingItems[i]["transparency"]);
 				
 				var transparency:* = dO.publishingItems[i]["transparency"];
 				
@@ -333,8 +328,11 @@ package managers
 		
 		
 		public function save():void {
+			trace('SAVE');
+			if (!activeDocument) return;
+			
 			if (!metadataProvider) return;
-			activeDocument.saved = false;
+			trace('SAVED');
 			metadataProvider.updateXMPCapabilities(activeDocument);
 			metadataProvider.saveMetadata(toXMPView().string);
 		}
