@@ -152,7 +152,7 @@ package managers
 		}
 		
 		public function documentActivated():void {
-			if (!getActiveDocument()) return;		
+//			if (!getActiveDocument()) return;		
 			if (getActiveDocument() == model.activeDocument) return;
 			model.activeDocument = getActiveDocument();
 			model.initialize();

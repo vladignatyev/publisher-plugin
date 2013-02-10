@@ -35,17 +35,13 @@
 			
 			
 			private function onApplicationComplete():void{
-				AutoTheme.sync();
-				
 				model = AppModel.getInstance();
 				model.dataGridProvider = dataGridProvider;
 				model.readyState();
-				trace('ononApplicationComplete');
-				
+
 				formatNamesCB.selectedIndex = 2;
 				controller = AppController.getInstance();
 				watcher = AppLifeCycle.getInstance();
-				
 				
 				
 				ToolTipManager.showDelay = 1000;

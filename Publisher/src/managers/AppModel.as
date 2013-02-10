@@ -95,11 +95,10 @@ package managers
 			if (!activeDocument) {
 				state = "disabled";
 				return;
+			} else if (!restoreFromMeta()){
+				defaultInit();
 			} else {
 				state = "normal";
-			}
-			if (!restoreFromMeta()){
-				defaultInit();
 			}
 			
 			if (!pathToPublish || pathToPublish == '')
