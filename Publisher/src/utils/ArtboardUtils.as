@@ -4,7 +4,7 @@ package utils
 
 	public class ArtboardUtils
 	{
-		public static function getDimension(artboard:Artboard):* {
+		public static function getDimensions(artboard:Artboard):* {
 			if (!artboard) {
 				return {"artboardWidth": -1, "artboardHeight": -1};
 			}

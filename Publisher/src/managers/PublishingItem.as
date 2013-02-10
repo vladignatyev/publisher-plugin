@@ -57,7 +57,7 @@ package managers
 		
 		public function get dimensionsString():String {
 			if (assetComposition && _activeDocument.artboards.index(assetComposition.artboardIndex)) {
-				var dimensions:* = ArtboardUtils.getDimension(_activeDocument.artboards.index(assetComposition.artboardIndex));
+				var dimensions:* = ArtboardUtils.getDimensions(_activeDocument.artboards.index(assetComposition.artboardIndex));
 				return [Math.round(dimensions.artboardWidth), "×", Math.round(dimensions.artboardHeight)].join('');
 			} 
 			return "";
