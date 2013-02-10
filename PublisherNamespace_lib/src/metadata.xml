@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations version="1.0">
+	<metadata name="xmp" description="XMP Binding">
+		<context name="variable" />
+		<attribute name="ns" type="String" required="true" defaultValue="PublisherNamespace"/>
+		<attribute name="property" type="String" required="true" values="assetsMetadata, exportPath"/>
+	</metadata>
+</annotations>
