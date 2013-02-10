@@ -11,6 +11,7 @@ package managers
 	import com.adobe.photoshop.Application;
 	
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.filesystem.File;
 	import flash.net.FileReference;
 	
@@ -18,6 +19,8 @@ package managers
 	import interfaces.IAssetCompositionInflator;
 	import interfaces.IMetadataProvider;
 	
+	import managers.platforms.IllustratorController;
+	import managers.platforms.PhotoshopController;
 	
 	import mx.controls.DataGrid;
 	import mx.events.CollectionEvent;
@@ -25,14 +28,14 @@ package managers
 	/**
 	 * 
 	 * */
-	public class AppController implements CSController
+	public class AppController extends EventDispatcher implements CSController
 	{
 		
 		private static var instance:AppController;
 		
 		private var model:AppModel = AppModel.getInstance();
 
-		private var appController:IllustratorController;
+		public var appController:CSController;
 		
 
 		[Bindable]
@@ -46,10 +49,10 @@ package managers
 			switch(model.hostName){
 				case "illustrator":
 				case "ILST":	
-					appController = IllustratorController.getInstance() as IllustratorController;
+					appController = IllustratorController.getInstance()
 					break;
 				case "photoshop":
-					appController = null;
+					appController = PhotoshopController.getInstance();
 					break;
 			}			
 			
@@ -160,6 +163,8 @@ package managers
 			model.activeDocument = getActiveDocument();
 			model.initialize();
 		}
+		
+		public var fileListDG:DataGrid;
 		
 		public function appActivated():void {
 		}

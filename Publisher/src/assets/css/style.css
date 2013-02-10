@@ -11,3 +11,16 @@ ToolTip {
 	border-thickness: 1;
 	buttonHeight: 10;
 }
+
+
+DataGrid {
+	headerStyleName: gridHeader;
+	headerSeparatorSkin: ClassReference("mx.skins.ProgrammaticSkin");
+}
+
+.gridHeader {
+	fontWeight: 		normal;
+	fontSize:			9pt;
+	color:				#808080;
+	backgroundColor:	#FFFFFF;
+}

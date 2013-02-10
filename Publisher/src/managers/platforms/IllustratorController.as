@@ -1,4 +1,4 @@
-package managers
+package managers.platforms
 {
 	import com.adobe.csawlib.illustrator.Illustrator;
 	import com.adobe.cshostadapter.*;
@@ -6,7 +6,10 @@ package managers
 	import com.adobe.photoshop.ExportOptions;
 	import com.adobe.photoshop.ExportOptionsIllustrator;
 	
+	import events.FileExportEvent;
+	
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.filesystem.File;
 	import flash.geom.Point;
 	import flash.net.FileReference;
@@ -16,6 +19,9 @@ package managers
 	import interfaces.IAssetCompositionInflator;
 	import interfaces.IMetadataProvider;
 	
+	import managers.AppModel;
+	import managers.AssetComposition;
+	import managers.PublishingItem;
 	
 	import mx.collections.ArrayCollection;
 	
@@ -23,7 +29,7 @@ package managers
 	
 	import utils.ArtboardUtils;
 	
-	public class IllustratorController implements CSController, IMetadataProvider, IAssetCompositionInflator
+	public class IllustratorController extends EventDispatcher implements CSController, IMetadataProvider, IAssetCompositionInflator
 	{
 		private static var model:AppModel = AppModel.getInstance();
 		private static var instance:IllustratorController;
@@ -52,6 +58,7 @@ package managers
 
 		public function attach():void{
 			adapter = AIEventAdapter.getInstance();
+
 //			adapter.addEventListener(AIEvent.LAYER_LIST_CHANGED, documentChangedHandler);
 //			adapter.addEventListener(AIEvent.DOCUMENT_CROP_AREA_MODIFIED, documentChangedHandler);
 		}
@@ -72,10 +79,9 @@ package managers
 			var exportOptions:*;
 			
 			pushAssetState();
-			
+
 			for (var i:int=0; i < model.dataGridProvider.length; i++) {
 				var item:PublishingItem = model.dataGridProvider.getItemAt(i) as PublishingItem;
-				
 				
 				switch(item.fileType){
 					case PublishingItem.JPG:
@@ -103,13 +109,22 @@ package managers
 						exportOptions.artBoardClipping = true;
 						break;
 				}
-				
+
 				if (!item.isPublished) continue;
 				
 				setAssetState(item.assetComposition);
+
+//				app.activeDocument.selectObjectsOnActiveArtboard();
+//				var sel:* = app.activeDocument.selection;
+//				app.activeDocument.rasterize(sel, sel.visibleBounds);
 				
 				file =  new File([model.pathToPublish, item.systemFilename].join('/'));
 				app.activeDocument.exportFile(file, format, exportOptions);
+				
+				app.redraw();
+				
+				dispatchEvent(new FileExportEvent(FileExportEvent.FILE_EXPORT));
+				
 			}
 
 			popAssetState();
