@@ -21,6 +21,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.ToolTip;
+			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.core.ContainerLayout;
 			import mx.events.AIREvent;
 			import mx.events.CollectionEvent;
@@ -37,61 +38,53 @@
 				model = AppModel.getInstance();
 				model.dataGridProvider = dataGridProvider;
 
-				formatNamesCB.selectedIndex = 2;
+//				formatNamesCB.selectedIndex = 2;
 				controller = AppController.getInstance();
 				
 				ToolTipManager.showDelay = 1000;
 				ToolTipManager.hideDelay = 10000;
-				controller.fileListDG = fileListDG;
-//				controller.documentActivated();		
+//				controller.fileListDG = fileListDG;
+				
+				
+////				controller.documentActivated();		
 				
 				styleDeclaration.setStyle("backgroundColor", "0xFFFFFF");
 			}
-			
-//			private function exportFileHandler(event:Event):void {
-//				trace ("fileExport");
-//				trace ("");
-//				
-//				(controller.appController as IllustratorController).app.redraw();
-//				progressBox.width += 30;
-//				progressBox.validateNow();
-//				(controller.appController as IllustratorController).app.redraw();
-//			}
-			
-			// Вызывается как-то часто по событию ValueCommit. 
-			// Нужно апдейтить по изменению selectedIndex
+						
 			private function formatNamesCB_changeHandler(event:Event):void
 			{
-				model.formatName = formatNamesCB.selectedItem.label;				
+				// Вызывается как-то часто по событию ValueCommit. 
+				// Нужно апдейтить по изменению selectedIndex
+//				model.formatName = formatNamesCB.selectedItem.label;				
 			}
 			
 			protected function fileListDG_itemClickHandler(event:ListEvent):void
 			{
-				saveButton.enabled = true; // todo: непонятно в каокй же момент кнопку делать активной
+//				saveButton.enabled = true; // todo: непонятно в каокй же момент кнопку делать активной
 				controller.changeArtboardToComposition(controller.getAssetCompositionByIndex(event.rowIndex));
 			}
 			
 			protected function fileListDG_itemDoubleClickHandler(event:ListEvent):void
 			{
 				controller.changeCompositionToIndex(event.rowIndex);
-				saveButton.enabled = true;// todo: непонятно в каокй же момент кнопку делать активной
+//				saveButton.enabled = true;// todo: непонятно в каокй же момент кнопку делать активной
 			}
 			
 			protected function addNewAsset_clickHandler(event:MouseEvent):void
 			{
 				// TODO Auto-generated method stub
-				controller.newFile();
-				controller.changeCompositionToLastCreated();
-				fileListDG.selectedIndex = model.dataGridProvider.length - 1;
-				fileListDG.setFocus();
-				fileListDG.editedItemPosition = {rowIndex:model.dataGridProvider.length - 1, columnIndex:1};
+//				controller.newFile();
+//				controller.changeCompositionToLastCreated();
+//				fileListDG.selectedIndex = model.dataGridProvider.length - 1;
+//				fileListDG.setFocus();
+//				fileListDG.editedItemPosition = {rowIndex:model.dataGridProvider.length - 1, columnIndex:1};
 			}
 			
 			protected function fileListDG_itemFocusOutHandler(event:DataGridEvent):void
 			{
 				// TODO Auto-generated method stub
-				//				controller.restoreComposition();
-				saveButton.enabled = false;
+//	//							controller.restoreComposition();
+//				saveButton.enabled = false;
 			}
 			
 			public function hyphenate(item:Object, column:DataGridColumn):String {
@@ -106,8 +99,8 @@
 			protected function csxswindowedapplication1_focusOutHandler(event:FocusEvent):void
 			{
 				// TODO Auto-generated method stub
-				saveButton.enabled = false;
-				//				fileListDG.selectedIndex = -1;
+//				saveButton.enabled = false;
+	//			//				fileListDG.selectedIndex = -1;
 			}
 			
 			protected function csxswindowedapplication1_applicationActivateHandler(event:AIREvent):void
@@ -122,8 +115,8 @@
 				if (!model) return;
 				model.gridChanged();
 				if (model.dataGridProvider) {
-					fileListDG.validateNow();
-					fileListDG.scrollToIndex(model.dataGridProvider.length);
+//			//		fileListDG.validateNow();
+//		//			fileListDG.scrollToIndex(model.dataGridProvider.length);
 				}
 			}
 			
@@ -144,7 +137,7 @@
 			{
 				
 				// TODO Auto-generated method stub
-				model.defaultPathToPublish = pathInput.text;
+//				model.defaultPathToPublish = pathInput.text;
 //				model.save(); //todo: если приложение закрывается, то не приводить к model.save
 			}
 			
@@ -188,7 +181,7 @@
 
 		
 		<mx:VBox width="100%" height="100%" verticalGap="3">
-			<mx:DataGrid id="fileListDG" 
+			<!--<mx:DataGrid id="fileListDG" 
 						 width="100%" 
 						 height="100%" 
 						 backgroundAlpha="0.0"
@@ -230,80 +223,66 @@
 							</mx:Component>                         
 						</mx:itemRenderer> 
 					</mx:DataGridColumn>
-<!--					<mx:DataGridColumn dataField="artboardName" editable="false" headerText="Artboard"
-									   labelFunction="hyphenate"/>-->
 					<mx:DataGridColumn dataField="filename" dataTipField="filename" editable="true"
 									   headerText="SCREENS"/>
 					<mx:DataGridColumn dataField="fileType" dataTipField="fileType" editable="false"
-									   headerText="FILE TYPE" width="60"
-									   >
-<!--						<mx:itemRenderer> 
-							<mx:Component> 
-								<mx:Box paddingLeft="3">
-									<mx:Script>
-										<![CDATA[
-											import managers.PublishingItem;
-											
-											import mx.events.ListEvent;
-											
-											protected function combobox1_changeHandler(event:ListEvent):void
-											{
-												// TODO Auto-generated method stub
-												(data as PublishingItem).fileType = combo.selectedItem.data; 
-											}
-											
-										]]>
-									</mx:Script>
-									<mx:ComboBox id="combo" 
-												 change="combobox1_changeHandler(event)" 
-												 selectedIndex="{[PublishingItem.PNG24, PublishingItem.JPG].indexOf((data as PublishingItem).fileType)}">
-										<mx:ArrayCollection>
-											<mx:Object label="PNG 24" data="{PublishingItem.PNG24}" />
-											<mx:Object label="JPEG" data="{PublishingItem.JPG}" />
-										</mx:ArrayCollection>
-									</mx:ComboBox>
-								</mx:Box>
-							</mx:Component>                         
-						</mx:itemRenderer>--> 
-						</mx:DataGridColumn>
+									   headerText="FILE TYPE" width="60" />
 					<mx:DataGridColumn dataField="dimensionsString" editable="false"
 									   headerText="DIMENSIONS"
 									   />
-						<!--<mx:itemRenderer>
-							<mx:Component>
-								<mx:HBox width="100%" height="100%" borderColor="0xFF0000" borderStyle="solid" borderThickness="1">
-									<mx:Script>
-										<![CDATA[
-											import managers.PublishingItem;
-										]]>
-									</mx:Script>
-									<mx:Spacer width="0.1" />
-									<mx:Label text="{(data as PublishingItem).dimensionsString}" />
-									<mx:Box backgroundColor="0xFF0000" width="3" height="5" />
-								</mx:HBox>								
-							</mx:Component> 
-						</mx:itemRenderer> 
-					</mx:DataGridColumn>-->
 				</mx:columns>
-			</mx:DataGrid>
+			</mx:DataGrid>-->
+			
+			<mx:AdvancedDataGrid id="grid" 
+								 width="100%" height="100%"
+								 dragEnabled="true"
+								 dropEnabled="true"
+								 dragMoveEnabled="true"
+								 editable="true"
+								 >
+				<mx:dataProvider>
+					<mx:GroupingCollection id="gc">
+						<mx:source>
+							<mx:ArrayCollection id="dataGridProvider" />
+						</mx:source>
+						<mx:grouping>
+							<mx:Grouping>
+								<mx:GroupingField name="pathToPublish" />
+							</mx:Grouping>
+						</mx:grouping>
+					</mx:GroupingCollection>
+				</mx:dataProvider>
+				<mx:groupedColumns>   
+					<mx:AdvancedDataGridColumn id="screenNameColumn" headerText="SCREENS ASSETS" dataField="name" />
+					<mx:AdvancedDataGridColumn id="fileTypeColumn" headerText="FILE TYPE" dataField="type" />
+					<mx:AdvancedDataGridColumn id="dimensionColumn" headerText="DIMENSION" dataField="dimensionsString" />
+				</mx:groupedColumns>
+				<!--<mx:rendererProviders>
+					<mx:AdvancedDataGridRendererProvider column="{screenNameColumn}" 
+														 columnSpan="1"
+														 renderer="views.ScreenNameRenderer"
+														 />
+				</mx:rendererProviders>-->
+			</mx:AdvancedDataGrid>
+			
 			
 			
 				
 				<mx:HRule width="100%" shadowColor="0xCCCCCC" strokeColor="0x999999"/>
 				
 				<mx:HBox width="100%">
-					<mx:TextInput id="pathInput" left="16" right="6" width="100%" height="20"
+<!--					<mx:TextInput id="pathInput" left="16" right="6" width="100%" height="20"
 								  valueCommit="pathInput_valueCommitHandler(event)"
 								  editable="true" fontSize="9"
 								  text="{model.pathToPublish != null?model.pathToPublish:''}"
-								  />
+								  />-->
 					<mx:Button label="..." click="selectSaveDir(event)"/>
 					
-					<mx:ComboBox id="formatNamesCB" visible="false" width="80"
+					<!--<mx:ComboBox id="formatNamesCB" visible="false" width="80"
 								 change="formatNamesCB_changeHandler(event)"
 								 dataProvider="{model.formatNames}" includeInLayout="false"
 								 valueCommit="formatNamesCB_changeHandler(event)"/>			
-					
+					-->
 				</mx:HBox>		
 				
 				<mx:HRule width="100%" shadowColor="0xCCCCCC" strokeColor="0x999999"/>
@@ -311,11 +290,11 @@
 				<mx:HBox width="100%" horizontalGap="2" paddingBottom="1">
 					<mx:Button width="80" height="16" label="Publish" click="publishButtonClick(event)"
 							   toolTip="Publish assets"/>
-					
+					<!--
 					<mx:Button id="saveButton" width="80" height="16" label="Update"
 							   click="controller.updateNthAssetWithCurrentComposition(fileListDG.selectedIndex)"
 							   toolTip="Save current composition to selected asset"/>
-					
+					-->
 					<mx:Spacer width="100%" />
 					
 					<mx:Button id="addNewAssetButton" 
@@ -324,14 +303,14 @@
 							   downSkin="@Embed(source='assets/icons/new_down.png')"
 							   overSkin="@Embed(source='assets/icons/new_over.png')" toolTip="New File"
 							   upSkin="@Embed(source='assets/icons/new.png')"/>
-					<mx:Button width="30" height="16"
+					<!--<mx:Button width="30" height="16"
 							   click="controller.deleteSelectedFile(fileListDG.selectedItem, fileListDG.selectedIndex)"
 							   disabledSkin="@Embed(source='assets/icons/delete_disabled.png')"
 							   downSkin="@Embed(source='assets/icons/delete_down.png')"
 							   enabled="{model.dataGridProvider.length &gt; 0}"
 							   overSkin="@Embed(source='assets/icons/delete_over.png')"
 							   toolTip="Delete File" upSkin="@Embed(source='assets/icons/delete.png')"/>
-					
+					-->
 					<mx:Spacer width="12" />
 
 					

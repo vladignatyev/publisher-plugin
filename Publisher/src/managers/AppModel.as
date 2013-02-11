@@ -227,7 +227,10 @@ package managers
 				var pathToPublish:String = o.pathToPublish;
 				
 				for (var i:Number = 0; i < o.publishingItems.length; i++) {
-					const filename:String = o.publishingItems[i]["filename"];
+					var filename:String = o.publishingItems[i]["filename"];
+					if (!filename) {
+						filename = i.toString();
+					}
 					var type:String = o.publishingItems[i]["fileType"];
 					
 					var transparency:* = o.publishingItems[i]["transparency"];
@@ -246,6 +249,7 @@ package managers
 					
 					item.isPublished = o.isPublished;
 					item.type = type;
+					item.name = filename;
 
 					dataGridProvider.addItem(item);
 				}				

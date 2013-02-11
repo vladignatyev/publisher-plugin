@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Label xmlns:mx="http://www.adobe.com/2006/mxml"
+		  fontSize="12"
+		  fontFamily="sans-serif"
+		  >
+	<mx:Script>
+		<![CDATA[
+			import managers.data.PublishingItem;
+			override public function set data(value:Object):void {
+				if (!value) return;
+				const item:PublishingItem = value as PublishingItem;
+				if (!item) return; 
+				trace(item);
+				text = item.name;
+			}
+				
+		]]>
+	</mx:Script>
+</mx:Label>

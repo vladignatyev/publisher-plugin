@@ -14,6 +14,8 @@
       <libraryPathEntry kind="3" linkType="1" path="${CSAR}/release/xmpsns_rights.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="${CSAR}/release/MXThemeSync.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/PublisherNamespace_lib/bin/PublisherNamespace_lib.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="/Applications/Adobe Flash Builder 4/sdks/3.5.0/frameworks/libs/datavisualization.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="/Applications/Adobe Flash Builder 4.6/sdks/3.6.0/frameworks/locale/en_US/datavisualization_rb.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>
