@@ -2,24 +2,28 @@ package managers
 {
 	import com.adobe.csawlib.illustrator.Illustrator;
 	import com.adobe.csxs.core.CSXSInterface;
-	import com.adobe.csxs.types.*;
 	import com.adobe.illustrator.Artboard;
 	import com.adobe.illustrator.Artboards;
+	import com.adobe.illustrator.Document;
+	import com.adobe.illustrator.RGBColor;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.external.HostObject;
 	
-	import mx.collections.ArrayCollection;
-	import managers.data.PublishingItem;
 	import managers.data.AssetComposition;
+	import managers.data.PublishingItem;
+	
+	import mx.collections.ArrayCollection;
 
 	[Bindable]
 	public class AppModel extends EventDispatcher
 	{
+		public static const FORMAT_VERSION:String = "v1.0";
+		
 		private static var instance:AppModel;
 		
-		private var _activeDocument:*;	//todo: ебучий пиздец! нужно ряд интерфейсов сделать, чтобы отгородить от имплементации платформы, динамическую тпизацию выпилить и забыть в страшном сне
+		private var _activeDocument: Document;
 		private var _controller:IllustratorController;
 		
 		public function AppModel() {
@@ -29,12 +33,12 @@ package managers
 			_controller = value;
 		}
 
-		public function get activeDocument():*
+		public function get activeDocument():Document
 		{
 			return _activeDocument;
 		}
 
-		public function set activeDocument(value:*):void
+		public function set activeDocument(value:Document):void
 		{
 			_activeDocument = value;
 		}
@@ -47,31 +51,10 @@ package managers
 			return instance;
 		}
 		
-		public var hostName:String = "";
-		private var _pathToPublish:String;
-		
-		public function set pathToPublish(value:String):void {
-			if (value == _pathToPublish) return;
-			_pathToPublish = value;
-			if (activeDocument) {
-				save();
-			}
-		}
-		
-		public function get pathToPublish():String {
-			return _pathToPublish;
-		}
-		
+		public var defaultPathToPublish:String;
+				
 		public var dataGridProvider:ArrayCollection = new ArrayCollection();
 
-		public var formatNames:ArrayCollection = new ArrayCollection(
-			[{label:"JPEG", ext:"jpg"}, 
-			 {label:"GIF", ext:"gif"}, 
-			 {label:"PNG24", ext:"png"}
-			]);
-		
-		private var _formatName:String = "";
-		
 		public var state:String = "disabled";
 		
 		public function initialize():void {
@@ -83,12 +66,6 @@ package managers
 			} else {
 				state = "normal";
 			}
-			
-			if (!pathToPublish || pathToPublish == '')
-			{
-				
-				pathToPublish = activeDocument.fullName.parent.nativePath;
-			}
 		}
 		
 		public function defaultInit():void {
@@ -96,21 +73,7 @@ package managers
 			clean();
 			state = "welcome";
 		}
-		
-		public function setupDefaultModel():void {
-			var artboards:Artboards = activeDocument.artboards as Artboards;
-			
-			for (var i:int = 0; i < artboards.length; i++) {
-				var artboard:Artboard = artboards.index(i);
-				var currentComposition:AssetComposition = getCurrentAssetComposition();
-				currentComposition.setArtboard(i);
-				addNewDefaultFile(currentComposition);
-			}
-			
-			pathToPublish = '';
-			
-		}
-		
+				
 		public function getCurrentAssetComposition():AssetComposition
 		{
 			var newAssetComposition:AssetComposition = new AssetComposition();
@@ -130,15 +93,23 @@ package managers
 		
 		public function setupDefault():void {
 			lockSavingOnUpdates();
-			setupDefaultModel();
+			var artboards:Artboards = activeDocument.artboards as Artboards;
+			
+			for (var i:int = 0; i < artboards.length; i++) {
+				var artboard:Artboard = artboards.index(i);
+				var currentComposition:AssetComposition = getCurrentAssetComposition();
+				currentComposition.setArtboard(i);
+				addNewDefaultFile(currentComposition);
+			}
 			unlockSavingOnUpdates();
 			state = "normal";
 			
 			try {
-			if (!pathToPublish || pathToPublish == '')
-			{
-				pathToPublish = activeDocument.fullName.parent.nativePath;
-			}
+				if (!defaultPathToPublish || defaultPathToPublish == '')
+				{
+					
+					defaultPathToPublish = activeDocument.fullName.parent.nativePath;
+				}
 			} catch (e:Error) {
 				trace(e);
 			}
@@ -154,21 +125,12 @@ package managers
 			return false;
 		}
 		
-		///// GETTERS & SETTERS
-		public function get formatName():String
-		{
-			return _formatName;
-		}
-		
-		public function set formatName(value:String):void
-		{
-			_formatName = value;
-			dispatchEvent(new Event("formatNameUpdated"));
-		}
-
 		
 		public function addNewFile(name:String, assetComposition:AssetComposition):void {
-			dataGridProvider.addItem(new PublishingItem(name, PublishingItem.PNG24, true, _activeDocument, "", true, assetComposition));
+			const item:PublishingItem = new PublishingItem();
+			item.activeDocument = activeDocument;
+			item.assetComposition = assetComposition;
+			dataGridProvider.addItem(item);
 			save();
 		}
 		
@@ -181,7 +143,6 @@ package managers
 				}
 				name = n;
 			}
-//			return [name, getExtension()].join('.');
 			return name;
 		}
 		
@@ -210,7 +171,7 @@ package managers
 			lockSavingOnUpdates();
 			dataGridProvider.disableAutoUpdate();
 			dataGridProvider.removeAll();
-			_pathToPublish = '';
+			defaultPathToPublish = '';
 			if (!activeDocument) {
 				state = 'disabled';
 			}
@@ -218,36 +179,18 @@ package managers
 			unlockSavingOnUpdates();
 		}
 		
-		private function getExtension():String {
-			// Ищем среди массива форматов файлов и узнаем расширение
-			var formatNamesFiltered:ArrayCollection = new ArrayCollection (formatNames.toArray());
-			formatNamesFiltered.filterFunction = function(item:Object):Boolean {
-				return item.label == formatName;
-			}
-			formatNamesFiltered.refresh();
-			return formatNamesFiltered.getItemAt(0).ext;
-		}
-		
 		private function getFlattened():* {
 			var length:int = dataGridProvider.length;
 			
 			var result:* = {
-				"formatName":formatName,
-				"pathToPublish":pathToPublish,
+				"formatVersion": FORMAT_VERSION,
 				"publishingItems": new Array(length)
 			};
 			
 			for (var i:Number = 0; i < length; i++) {
 				var item: PublishingItem = dataGridProvider.getItemAt(i) as PublishingItem;
-				result.publishingItems[i] = {
-					"isPublished":item.isPublished,
-					"filename": item.filename,
-					"fileType": item.fileType,
-					"transparency": item.transparency,
-					"icon": item.icon,
-					"artboardName":item.artboardName,
-					"assetComposition":_controller.flattenAssetComposition(item.assetComposition)
-				};
+				result.publishingItems[i] = item.toPlainObject();
+				result.publishingItems[i]["assetComposition"] = _controller.flattenAssetComposition(item.assetComposition);
 			}
 			
 			return result;
@@ -263,25 +206,51 @@ package managers
 		
 		public function fromXMPView(xmpModelView:AppModelXMPView):void {
 			clean();
-			var dO:* = xmpModelView.dataObject;
-			this.formatName = dO.formatName;
-			this.pathToPublish = dO.pathToPublish;
+			var o:* = xmpModelView.dataObject;
 			
 			lockSavingOnUpdates();
 			dataGridProvider.disableAutoUpdate();
-			for (var i:Number=0; i < dO.publishingItems.length; i++) {
+			
+			if (o.formatVersion == FORMAT_VERSION) {
+				for (var i:Number = 0; i < o.publishingItems.length; i++) {
+					const po:* = o.publishingItems[i];
+					
+					var item:PublishingItem = new PublishingItem();
+					item.activeDocument = activeDocument;
+					item.assetComposition = _controller.restoreAssetComposition(po.assetComposition);
+					item.fromPlainObject(po);
+					
+					dataGridProvider.addItem(item);
+				}				
 				
-				const filename:String = dO.publishingItems[i]["filename"];
-				var fileType:String = dO.publishingItems[i]["fileType"];
+			} else { //todo: remove after alpha-testing (may be)
+				var pathToPublish:String = o.pathToPublish;
 				
-				var transparency:* = dO.publishingItems[i]["transparency"];
-				
-				if (!fileType) fileType = PublishingItem.PNG24;
-				if (transparency === undefined) transparency = true;
-				
-				dataGridProvider.addItem(new PublishingItem(filename, fileType, transparency, activeDocument, 
-					dO.publishingItems[i].icon, dO.isPublished, _controller.restoreAssetComposition(dO.publishingItems[i].assetComposition)));
+				for (var i:Number = 0; i < o.publishingItems.length; i++) {
+					const filename:String = o.publishingItems[i]["filename"];
+					var type:String = o.publishingItems[i]["fileType"];
+					
+					var transparency:* = o.publishingItems[i]["transparency"];
+					
+					if (!type) type = PublishingItem.PNG24;
+					if (transparency === undefined) transparency = true;
+					
+					var item:PublishingItem = new PublishingItem();
+					item.activeDocument = activeDocument;
+					item.assetComposition = _controller.restoreAssetComposition(o.publishingItems[i].assetComposition);
+					
+					if (type == PublishingItem.PNG24) {
+						item.png24Transparency = transparency;
+					}
+					item.pathToPublish = pathToPublish;
+					
+					item.isPublished = o.isPublished;
+					item.type = type;
+
+					dataGridProvider.addItem(item);
+				}				
 			}
+			
 			dataGridProvider.enableAutoUpdate();
 			unlockSavingOnUpdates();
 		}

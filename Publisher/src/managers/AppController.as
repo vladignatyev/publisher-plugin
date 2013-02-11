@@ -181,7 +181,7 @@ package managers
 		public function attach():void
 		{
 			appController.attach();
-			model.activeDocument = getActiveDocument();
+			model.activeDocument = appController.activeDocument;
 			model.controller = appController;
 		}
 		
@@ -219,14 +219,10 @@ package managers
 			}
 		}
 		
-		public function getActiveDocument():* {
-			return appController.getActiveDocument();
-		}
-		
 		public function documentActivated(event:CSXSEvent = null):void {
-			if (!getActiveDocument()) return;		
-			if (getActiveDocument() == model.activeDocument) return;
-			model.activeDocument = getActiveDocument();
+			if (!appController.activeDocument) return;		
+			if (appController.activeDocument == model.activeDocument) return;
+			model.activeDocument = appController.activeDocument;
 			model.initialize();
 		}
 		

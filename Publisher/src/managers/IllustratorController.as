@@ -27,12 +27,7 @@ package managers
 		private static var instance:IllustratorController;
 		private static var adapter:AIEventAdapter;
 		private var _app:Application;
-		
-		public function getActiveDocument():* {
-			return _app.activeDocument;
-		}
-		
-		
+				
 		public function IllustratorController() {
 		}
 		
@@ -59,6 +54,7 @@ package managers
 		public function detach():void 
 		{
 			try{
+				adapter = null;
 //				adapter.removeEventListener(AIEvent.LAYER_LIST_CHANGED, documentChangedHandler);
 //				adapter.removeEventListener(AIEvent.DOCUMENT_CROP_AREA_MODIFIED, documentChangedHandler);
 			}
@@ -186,7 +182,7 @@ package managers
 			var assetComposition:AssetComposition = new AssetComposition();
 			assetComposition.setArtboard(flattenedComposition.artboardIndex);
 			for (var i:Number = 0; i < flattenedComposition.layerIndexes.length; i++) {
-				var layer:Layer = (model.activeDocument as Document).layers.index(flattenedComposition.layerIndexes[i].index);
+				var layer:Layer = model.activeDocument.layers.index(flattenedComposition.layerIndexes[i].index);
 				if (!layer) {
 					return null;
 				}

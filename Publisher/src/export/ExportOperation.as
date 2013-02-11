@@ -4,6 +4,7 @@ package export
 	import com.adobe.illustrator.ExportOptionsJPEG;
 	import com.adobe.illustrator.ExportOptionsPNG24;
 	import com.adobe.illustrator.ExportType;
+	import com.adobe.illustrator.RGBColor;
 	
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
@@ -21,7 +22,6 @@ package export
 		private var items:Array;
 		private var controller:IllustratorController;
 		private var interrupted:Boolean;
-		private var pathToPublish:String;
 		private var totalItems:uint;
 
 		public function ExportOperation(controller:IllustratorController, items:Array)
@@ -43,44 +43,19 @@ package export
 			}
 			
 			const item:PublishingItem = items.pop() as PublishingItem;
-			var format:ExportType;
-			var exportOptions:*;
-			
-			switch(item.fileType){
-				case PublishingItem.JPG:
-					format = ExportType.JPEG;
-					exportOptions = new ExportOptionsJPEG();
-					exportOptions.artBoardClipping = true;
-					exportOptions.antiAliasing = true;
-					break;
-				
-				case PublishingItem.GIF:
-					format = ExportType.GIF;
-					exportOptions = new ExportOptionsGIF();
-					exportOptions.colorCount = 256;
-					exportOptions.antiAliasing = false;
-					exportOptions.artBoardClipping = true;
-					exportOptions.transparency = true;
-					break;
-				
-				case PublishingItem.PNG24:
-				default:
-					format = ExportType.PNG24;
-					exportOptions = new ExportOptionsPNG24();
-					exportOptions.antiAliasing = true;
-					exportOptions.transparency = true; //todo: get transparency from PublishingItem
-					exportOptions.artBoardClipping = true;
-					break;
-			}
-			
 			controller.setAssetState(item.assetComposition);
 			
-			//				app.activeDocument.selectObjectsOnActiveArtboard();
-			//				var sel:* = app.activeDocument.selection;
-			//				app.activeDocument.rasterize(sel, sel.visibleBounds);
+			const file:File =  new File([item.pathToPublish, item.systemFilename].join('/'));
+			controller.activeDocument.exportFile(file, item.exportType, item.exportOptions);
 			
-			const file:File =  new File([pathToPublish, item.systemFilename].join('/'));
-			controller.activeDocument.exportFile(file, format, exportOptions);
+			if (item.exportAs2X) {
+				const file2x:File =  new File([item.pathToPublish, item.systemFilename2x].join('/'));
+				const exportOptions:* = item.exportOptions;
+				exportOptions.verticalScale = 200.0;
+				exportOptions.horizontalScale = 200.0;
+				controller.activeDocument.exportFile(file2x, item.exportType, exportOptions);
+			}
+			
 			dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, totalItems - items.length, totalItems));
 			
 			if (items.length > 0) {
@@ -90,10 +65,9 @@ package export
 			}
 		}
 		
-		public function publish(pathToPublish:String):void {
+		public function publish():void {
 			if (!items.length) throw new IllegalOperationError("Items to export list is empty. Please don't reuse ExportOperation object!");
 
-			this.pathToPublish = pathToPublish;
 			this.totalItems = items.length;
 			controller.pushAssetState();
 			dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, 0, items.length));

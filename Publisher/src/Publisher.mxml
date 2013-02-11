@@ -132,7 +132,7 @@
 				var f:File = new File();
 				f.browseForDirectory("Select directory to export your assets...");
 				f.addEventListener(Event.SELECT, function(event:Event):void {
-					model.pathToPublish = f.nativePath;
+					model.defaultPathToPublish = f.nativePath;
 				});
 				} catch (e:Error) {
 					trace('[Exception]' + e);					
@@ -144,7 +144,7 @@
 			{
 				
 				// TODO Auto-generated method stub
-				model.pathToPublish = pathInput.text;
+				model.defaultPathToPublish = pathInput.text;
 //				model.save(); //todo: если приложение закрывается, то не приводить к model.save
 			}
 			
@@ -155,7 +155,7 @@
 				// TODO Auto-generated method stub
 				publishingOperation = controller.export();
 				exportProgress.source = publishingOperation;
-				publishingOperation.publish(model.pathToPublish);
+				publishingOperation.publish();
 			}
 			
 		]]>
