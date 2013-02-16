@@ -161,7 +161,8 @@ package managers
 		
 		public function export():ExportOperation 
 		{
-			return appController.export();
+//			return appController.export();
+			return null;
 		}
 		
 		

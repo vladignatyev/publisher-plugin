@@ -61,7 +61,7 @@ package managers
 			catch(error:Error){}
 		}
 		
-		public function export():ExportOperation {
+		public function export(items:Array):ExportOperation {
 			const itemsToPublish:Array = [];
 			
 			for (var i:int=0; i < model.dataGridProvider.length; i++) {
@@ -73,6 +73,8 @@ package managers
 			
 			return new ExportOperation(this, itemsToPublish);
 		}
+		
+		
 		
 		public function get activeDocument():Document {
 			return app.activeDocument;
