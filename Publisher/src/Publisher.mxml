@@ -101,6 +101,16 @@
 					controller.fitViewportToAssetComposition(event.itemRenderer.data.assetComposition);
 			}
 			
+			protected function removeSelectedAssetButton_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				if (grid.selectedItem) {
+					if (grid.selectedItem is PublishingItem) {
+						model.deleteFileByIndex(grid.selectedItem as PublishingItem);
+					}
+				}
+			}
+			
 		]]>
 	</mx:Script>
 	
@@ -168,13 +178,18 @@
 
 					<mx:Spacer width="100%"/>
 					
+					<mx:Button id="removeSelectedAssetButton" width="30" height="16"
+							   click="removeSelectedAssetButton_clickHandler(event)"
+							   toolTip="Remove File" />
+					
 					<mx:Button id="addNewAssetButton" width="30" height="16"
 							   click="addNewAsset_clickHandler(event)"
 							   disabledSkin="@Embed(source='assets/icons/new_disabled.png')"
 							   downSkin="@Embed(source='assets/icons/new_down.png')"
 							   overSkin="@Embed(source='assets/icons/new_over.png')"
-							   toolTip="New File" upSkin="@Embed(source='assets/icons/new.png')"/>
-					<mx:Spacer width="12"/>
+							   upSkin="@Embed(source='assets/icons/new.png')"
+							   toolTip="New File" />
+					<mx:Spacer width="24"/>
 				</mx:HBox>
 		</mx:VBox>
 	</mx:VBox>

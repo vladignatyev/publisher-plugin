@@ -141,11 +141,7 @@ package managers
 			}
 			return instance;
 		}
-		
-		public function deleteSelectedFile(selectedFileItem:*, selectedFileIndex:Number): void {
-			if (selectedFileIndex > -1) model.deleteFileByIndex(selectedFileIndex);
-		}
-		
+				
 		public function detach():void 
 		{
 			appController.detach();

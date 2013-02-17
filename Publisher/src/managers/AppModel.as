@@ -153,11 +153,10 @@ package managers
  			addNewFile(getFilename(), getCurrentAssetComposition());
 		}
 		
-		public function deleteFileByIndex(index:Number):void {
-			if (dataProvider.length > 0) {
-				dataProvider.removeItemAt(index);
-				save();
-			}
+		public function deleteFileByIndex(item:PublishingItem):void {
+			if (dataProvider.length == 0) return;
+			dataProvider.removeItemAt(dataProvider.getItemIndex(item));
+			save();
 		}
 		
 		public function clean():void {
