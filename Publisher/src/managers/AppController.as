@@ -189,13 +189,13 @@ package managers
 		}
 		
 		
-		public function changeCompositionToLastCreated():void {
-			changeCompositionToIndex(model.dataProvider.length - 1);
-		}
+//		public function changeCompositionToLastCreated():void {
+//			changeCompositionToIndex(model.dataProvider.length - 1);
+//		}
 				
-		public function changeCompositionToIndex(index:Number):void {
-			fitViewportToAssetComposition(model.getAssetCompositionByIndex(index));
-		}
+//		public function changeCompositionToIndex(index:Number):void {
+//			fitViewportToAssetComposition(model.getAssetCompositionByIndex(index));
+//		}
 		
 		public function updateNthAssetWithCurrentComposition(i:Number):void {
 			var item:PublishingItem = model.dataProvider.getItemAt(i) as PublishingItem;

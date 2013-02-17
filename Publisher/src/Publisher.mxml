@@ -54,7 +54,7 @@
 			{
 				// TODO Auto-generated method stub
 				model.addNewDefaultFile();
-				controller.changeCompositionToLastCreated();
+				controller.fitViewportToAssetComposition(model.getAssetCompositionByIndex(model.dataProvider.length - 1));
 			}
 						
 			public function hyphenate(item:Object, column:DataGridColumn):String {
@@ -97,7 +97,8 @@
 			
 			protected function grid_itemDoubleClickHandler(event:ListEvent):void
 			{
-				controller.changeCompositionToIndex(event.rowIndex);				
+				if (event.itemRenderer.data is PublishingItem) 
+					controller.fitViewportToAssetComposition(event.itemRenderer.data.assetComposition);
 			}
 			
 		]]>
@@ -136,7 +137,9 @@
 			<mx:AdvancedDataGrid id="grid" width="100%" height="100%" dragEnabled="true"
 								 dragMoveEnabled="true" dropEnabled="true" editable="true"
 								 itemClick="grid_itemClickHandler(event)"
+								 doubleClickEnabled="true" 
 								 itemDoubleClick="grid_itemDoubleClickHandler(event)"
+								 sortItemRenderer="{null}"
 								 >
 				<mx:dataProvider>
 					<mx:GroupingCollection id="gc" source="{model.dataProvider}">
