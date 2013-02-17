@@ -15,6 +15,7 @@ package managers
 	import managers.data.PublishingItem;
 	
 	import mx.collections.ArrayCollection;
+	import mx.events.PropertyChangeEvent;
 
 	[Bindable]
 	public class AppModel extends EventDispatcher
@@ -27,6 +28,7 @@ package managers
 		private var _controller:IllustratorController;
 		
 		public function AppModel() {
+			dataGridProvider = new ArrayCollection();
 		}
 
 		public function set controller(value:IllustratorController):void {
@@ -52,12 +54,14 @@ package managers
 		}
 		
 		public var defaultPathToPublish:String;
-				
+		
+		[Bindable(event="dataGridProviderChanged")]
 		public var dataGridProvider:ArrayCollection = new ArrayCollection();
 
 		public var state:String = "disabled";
 		
 		public function initialize():void {
+			clean();
 			if (!activeDocument) {
 				state = "disabled";
 				return;
@@ -70,7 +74,7 @@ package managers
 		
 		public function defaultInit():void {
 			//настраиваем модель поумолчанию
-			clean();
+
 			state = "welcome";
 		}
 				
@@ -169,13 +173,11 @@ package managers
 		
 		public function clean():void {
 			lockSavingOnUpdates();
-			dataGridProvider.disableAutoUpdate();
-			dataGridProvider.removeAll();
+//			dataGridProvider.disableAutoUpdate();
+//			dataGridProvider.removeAll();
+			dataGridProvider = new ArrayCollection();
 			defaultPathToPublish = '';
-			if (!activeDocument) {
-				state = 'disabled';
-			}
-			dataGridProvider.enableAutoUpdate();
+//			dataGridProvider.enableAutoUpdate();
 			unlockSavingOnUpdates();
 		}
 		
@@ -205,11 +207,11 @@ package managers
 		}
 		
 		public function fromXMPView(xmpModelView:AppModelXMPView):void {
-			clean();
 			var o:* = xmpModelView.dataObject;
 			
-			lockSavingOnUpdates();
-			dataGridProvider.disableAutoUpdate();
+			clean();
+//			lockSavingOnUpdates();
+//			dataGridProvider.disableAutoUpdate();
 			
 			if (o.formatVersion == FORMAT_VERSION) {
 				for (var i:Number = 0; i < o.publishingItems.length; i++) {
@@ -255,8 +257,10 @@ package managers
 				}				
 			}
 			
-			dataGridProvider.enableAutoUpdate();
-			unlockSavingOnUpdates();
+//			dataGridProvider.enableAutoUpdate();
+//			unlockSavingOnUpdates();
+			dispatchEvent(new Event("dataGridProviderChanged"));
+			
 		}
 		
 		
