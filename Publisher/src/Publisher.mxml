@@ -3,6 +3,7 @@
 				xmlns:csxs="com.adobe.csxs.core.*"
 				width="100%" height="100%" minWidth="250" minHeight="240"
 				applicationComplete="onApplicationComplete()"
+				backgroundColor="0x000000"
 				historyManagementEnabled="false"
 				horizontalScrollPolicy="off" layout="{ContainerLayout.ABSOLUTE}"
 				usePreloader="false"
@@ -35,46 +36,22 @@
 			private var controller:AppController = null;
 			
 			private function onApplicationComplete():void{
-				model = AppModel.getInstance();
-				
-				model.addEventListener("dataGridProviderChanged", function(event:Event):void {
-					gc.refresh();
-//					grid.invalidateList();
-					
-					grid.expandAll();
-				});
-				
-				
-				
-//				formatNamesCB.selectedIndex = 2;
 				controller = AppController.getInstance();
 				
-//				controller.addEventListener("documentAfterActivate", function(event:*):void {
-//					if (grid) grid.expandAll();
-//				});
+				model = AppModel.getInstance();
+				model.addEventListener("dataGridProviderChanged", dataGridProviderChangedHandler);
 				
-					ToolTipManager.showDelay = 1000;
+				ToolTipManager.showDelay = 1000;
 				ToolTipManager.hideDelay = 10000;
-//				controller.fileListDG = fileListDG;
-				
-				
-////				controller.documentActivated();
-//				controller.documentActivated();
 				
 				styleDeclaration.setStyle("backgroundColor", "0xFFFFFF");
 			}
 			
-			private function dataChanged(event:Event):void {
-//				gc.refresh();
+			protected function dataGridProviderChangedHandler (event:Event):void {
+				gc.refresh();
+				grid.expandAll();
 			}
 						
-			private function formatNamesCB_changeHandler(event:Event):void
-			{
-				// Вызывается как-то часто по событию ValueCommit. 
-				// Нужно апдейтить по изменению selectedIndex
-//				model.formatName = formatNamesCB.selectedItem.label;				
-			}
-			
 			protected function fileListDG_itemClickHandler(event:ListEvent):void
 			{
 //				saveButton.enabled = true; // todo: непонятно в каокй же момент кнопку делать активной
@@ -90,20 +67,10 @@
 			protected function addNewAsset_clickHandler(event:MouseEvent):void
 			{
 				// TODO Auto-generated method stub
-//				controller.newFile();
-//				controller.changeCompositionToLastCreated();
-//				fileListDG.selectedIndex = model.dataGridProvider.length - 1;
-//				fileListDG.setFocus();
-//				fileListDG.editedItemPosition = {rowIndex:model.dataGridProvider.length - 1, columnIndex:1};
+				controller.newFile();
+				controller.changeCompositionToLastCreated();
 			}
-			
-			protected function fileListDG_itemFocusOutHandler(event:DataGridEvent):void
-			{
-				// TODO Auto-generated method stub
-//	//							controller.restoreComposition();
-//				saveButton.enabled = false;
-			}
-			
+						
 			public function hyphenate(item:Object, column:DataGridColumn):String {
 				var title: String  = item[column.dataField].toString();
 				if (column.width  < column.minWidth) {
@@ -111,30 +78,6 @@
 				} 
 				return title;
 				
-			}
-			
-			protected function csxswindowedapplication1_focusOutHandler(event:FocusEvent):void
-			{
-				// TODO Auto-generated method stub
-//				saveButton.enabled = false;
-	//			//				fileListDG.selectedIndex = -1;
-			}
-			
-			protected function csxswindowedapplication1_applicationActivateHandler(event:AIREvent):void
-			{
-				// TODO Auto-generated method stub
-				trace("activate");
-			}
-			
-			protected function dataGridProvider_collectionChangeHandler(event:CollectionEvent):void
-			{
-				// TODO Auto-generated method stub
-				if (!model) return;
-				model.gridChanged();
-				if (model.dataGridProvider) {
-//			//		fileListDG.validateNow();
-//		//			fileListDG.scrollToIndex(model.dataGridProvider.length);
-				}
 			}
 			
 			public function selectSaveDir(event:*):void {
@@ -148,14 +91,6 @@
 					trace('[Exception]' + e);					
 				}
 				
-			}
-			
-			protected function pathInput_valueCommitHandler(event:FlexEvent):void
-			{
-				
-				// TODO Auto-generated method stub
-//				model.defaultPathToPublish = pathInput.text;
-//				model.save(); //todo: если приложение закрывается, то не приводить к model.save
 			}
 			
 			private var publishingOperation:ExportOperation;
@@ -173,8 +108,18 @@
 	
 	<mx:Style source="assets/css/style.css"/>
 
+	<mx:Box id="disabledView" width="100%" height="100%"
+			visible="{!model || model.state == AppModel.STATE_DISABLED}" 
+			includeInLayout="{this.visible}" 
+			horizontalCenter="0" 
+			verticalCenter="0">
+		<mx:VBox left="40" top="100">
+			<mx:Label text="Open document to start using Publisher"/>
+		</mx:VBox>
+	</mx:Box>
+	
 	<mx:Box id="welcomeView" width="100%" height="100%"
-			visible="{model.state == 'welcome'}" 
+			visible="{model &amp;&amp; (model.state == AppModel.STATE_WELCOME)}" 
 			includeInLayout="{this.visible}" 
 			horizontalCenter="0" 
 			verticalCenter="0">
@@ -188,7 +133,7 @@
 
 	
 	<mx:VBox id="mainView" width="100%" height="100%"
-			visible="{model.state == 'normal'}" 
+			visible="{model &amp;&amp; (model.state == AppModel.STATE_NORMAL)}" 
 			includeInLayout="{this.visible}">
 		
 		<mx:ProgressBar id="exportProgress" 
@@ -198,58 +143,6 @@
 
 		
 		<mx:VBox width="100%" height="100%" verticalGap="3">
-			<!--<mx:DataGrid id="fileListDG" 
-						 width="100%" 
-						 height="100%" 
-						 backgroundAlpha="0.0"
-						 borderStyle="none" 
-						 doubleClickEnabled="true" 
-						 editable="true"
-						 itemClick="fileListDG_itemClickHandler(event)"
-						 itemDoubleClick="fileListDG_itemDoubleClickHandler(event)"
-						 itemFocusOut="fileListDG_itemFocusOutHandler(event)" 
-						 resizableColumns="true"
-						 rollOverColor="0xE0E0E0" 
-						 rowCount="{model.dataGridProvider.length}"
-						 selectionColor="0xC2D8ED" 
-						 selectionDuration="0" 
-						 showHeaders="true"
-						 textSelectedColor="0x333333" 
-						 verticalGridLineColor="0xB2B2B2"
-						 verticalGridLines="false"
-						 horizontalGridLines="false"
-						 
-						 allowMultipleSelection="true" 
-						 dragEnabled="true" 
-						 dropEnabled="true"
-						 dragMoveEnabled="true"
-						 sortableColumns="false"
-						 >
-				<mx:ArrayCollection id="dataGridProvider" collectionChange="dataGridProvider_collectionChangeHandler(event)"/>
-				<mx:columns>
-					<mx:DataGridColumn width="18" dataField="isPublished" editable="false" headerText="">
-						<mx:itemRenderer> 
-							<mx:Component> 
-								<mx:Box paddingLeft="3">
-									<mx:CheckBox borderColor="0xA0A0A0"
-												 click="data.isPublished=!data.isPublished"
-												 fillColors="0x000000 0xFFFFFF" 
-												 highlightAlphas="0, 0"
-												 selected="{data.isPublished}"/>
-								</mx:Box>
-							</mx:Component>                         
-						</mx:itemRenderer> 
-					</mx:DataGridColumn>
-					<mx:DataGridColumn dataField="filename" dataTipField="filename" editable="true"
-									   headerText="SCREENS"/>
-					<mx:DataGridColumn dataField="fileType" dataTipField="fileType" editable="false"
-									   headerText="FILE TYPE" width="60" />
-					<mx:DataGridColumn dataField="dimensionsString" editable="false"
-									   headerText="DIMENSIONS"
-									   />
-				</mx:columns>
-			</mx:DataGrid>-->
-			
 			<mx:AdvancedDataGrid id="grid" 
 								 width="100%" height="100%"
 								 dragEnabled="true"
@@ -271,32 +164,12 @@
 					<mx:AdvancedDataGridColumn id="fileTypeColumn" editable="false" headerText="FILE TYPE" dataField="type" />
 					<mx:AdvancedDataGridColumn id="dimensionColumn" editable="false" headerText="DIMENSION" dataField="dimensionsString" />
 				</mx:groupedColumns>
-				<!--<mx:rendererProviders>
-					<mx:AdvancedDataGridRendererProvider column="{screenNameColumn}" 
-														 columnSpan="1"
-														 renderer="views.ScreenNameRenderer"
-														 />
-				</mx:rendererProviders>-->
 			</mx:AdvancedDataGrid>
 			
-			
-			
-				
 				<mx:HRule width="100%" shadowColor="0xCCCCCC" strokeColor="0x999999"/>
 				
 				<mx:HBox width="100%">
-<!--					<mx:TextInput id="pathInput" left="16" right="6" width="100%" height="20"
-								  valueCommit="pathInput_valueCommitHandler(event)"
-								  editable="true" fontSize="9"
-								  text="{model.pathToPublish != null?model.pathToPublish:''}"
-								  />-->
 					<mx:Button label="..." click="selectSaveDir(event)"/>
-					
-					<!--<mx:ComboBox id="formatNamesCB" visible="false" width="80"
-								 change="formatNamesCB_changeHandler(event)"
-								 dataProvider="{model.formatNames}" includeInLayout="false"
-								 valueCommit="formatNamesCB_changeHandler(event)"/>			
-					-->
 				</mx:HBox>		
 				
 				<mx:HRule width="100%" shadowColor="0xCCCCCC" strokeColor="0x999999"/>
@@ -304,11 +177,6 @@
 				<mx:HBox width="100%" horizontalGap="2" paddingBottom="1">
 					<mx:Button width="80" height="16" label="Publish" click="publishButtonClick(event)"
 							   toolTip="Publish assets"/>
-					<!--
-					<mx:Button id="saveButton" width="80" height="16" label="Update"
-							   click="controller.updateNthAssetWithCurrentComposition(fileListDG.selectedIndex)"
-							   toolTip="Save current composition to selected asset"/>
-					-->
 					<mx:Spacer width="100%" />
 					
 					<mx:Button id="addNewAssetButton" 
@@ -317,22 +185,8 @@
 							   downSkin="@Embed(source='assets/icons/new_down.png')"
 							   overSkin="@Embed(source='assets/icons/new_over.png')" toolTip="New File"
 							   upSkin="@Embed(source='assets/icons/new.png')"/>
-					<!--<mx:Button width="30" height="16"
-							   click="controller.deleteSelectedFile(fileListDG.selectedItem, fileListDG.selectedIndex)"
-							   disabledSkin="@Embed(source='assets/icons/delete_disabled.png')"
-							   downSkin="@Embed(source='assets/icons/delete_down.png')"
-							   enabled="{model.dataGridProvider.length &gt; 0}"
-							   overSkin="@Embed(source='assets/icons/delete_over.png')"
-							   toolTip="Delete File" upSkin="@Embed(source='assets/icons/delete.png')"/>
-					-->
 					<mx:Spacer width="12" />
-
-					
 				</mx:HBox>
-			
 		</mx:VBox>
-		
-		
 	</mx:VBox>
-	
 </mx:Application>

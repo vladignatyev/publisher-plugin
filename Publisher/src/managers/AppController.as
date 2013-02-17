@@ -78,7 +78,6 @@ package managers
 		
 		private function documentDeactivatedHandler(event:CSXSEvent):void {
 			dispatchEvent(event.clone());
-			model.activeDocument = null;
 			model.state = 'disabled';
 			//			model.clean();
 
@@ -156,7 +155,6 @@ package managers
 		public function detach():void 
 		{
 			appController.detach();
-			model.activeDocument = null;
 			model.clean();
 		}
 		
@@ -183,7 +181,6 @@ package managers
 		public function attach():void
 		{
 			appController.attach();
-			model.activeDocument = appController.activeDocument;
 			model.controller = appController;
 		}
 		
@@ -227,7 +224,6 @@ package managers
 			if (!appController.activeDocument) return;		
 			if (appController.activeDocument == model.activeDocument) return;
 			
-			model.activeDocument = appController.activeDocument;
 			model.initialize();
 		}
 		

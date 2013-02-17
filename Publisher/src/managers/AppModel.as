@@ -17,9 +17,14 @@ package managers
 	import mx.collections.ArrayCollection;
 	import mx.events.PropertyChangeEvent;
 
-	[Bindable]
 	public class AppModel extends EventDispatcher
 	{
+		public static const STATE_DISABLED:String = "disabled";
+		public static const STATE_WELCOME:String = "welcome";
+		public static const STATE_NORMAL:String = "normal";
+		
+			
+		
 		public static const FORMAT_VERSION:String = "v1.0";
 		
 		private static var instance:AppModel;
@@ -29,6 +34,7 @@ package managers
 		
 		public function AppModel() {
 			dataGridProvider = new ArrayCollection();
+			state = STATE_DISABLED;
 		}
 
 		public function set controller(value:IllustratorController):void {
@@ -37,12 +43,7 @@ package managers
 
 		public function get activeDocument():Document
 		{
-			return _activeDocument;
-		}
-
-		public function set activeDocument(value:Document):void
-		{
-			_activeDocument = value;
+			return _controller.activeDocument;
 		}
 
 		public static function getInstance():AppModel 
@@ -56,28 +57,23 @@ package managers
 		public var defaultPathToPublish:String;
 		
 		[Bindable(event="dataGridProviderChanged")]
-		public var dataGridProvider:ArrayCollection = new ArrayCollection();
+		public var dataGridProvider:ArrayCollection;
 
-		public var state:String = "disabled";
+		[Bindable]
+		public var state:String;
 		
 		public function initialize():void {
 			clean();
+			
 			if (!activeDocument) {
-				state = "disabled";
-				return;
+				state = STATE_DISABLED;
 			} else if (!restoreFromMeta()){
-				defaultInit();
+				state = STATE_WELCOME;
 			} else {
-				state = "normal";
+				state = STATE_NORMAL;
 			}
 		}
-		
-		public function defaultInit():void {
-			//настраиваем модель поумолчанию
-
-			state = "welcome";
-		}
-				
+						
 		public function getCurrentAssetComposition():AssetComposition
 		{
 			var newAssetComposition:AssetComposition = new AssetComposition();
@@ -96,7 +92,6 @@ package managers
 
 		
 		public function setupDefault():void {
-			lockSavingOnUpdates();
 			var artboards:Artboards = activeDocument.artboards as Artboards;
 			
 			for (var i:int = 0; i < artboards.length; i++) {
@@ -105,22 +100,22 @@ package managers
 				currentComposition.setArtboard(i);
 				addNewDefaultFile(currentComposition);
 			}
-			unlockSavingOnUpdates();
-			state = "normal";
+			
+			state = STATE_NORMAL;
 			
 			try {
 				if (!defaultPathToPublish || defaultPathToPublish == '')
-				{
-					
+				{					
 					defaultPathToPublish = activeDocument.fullName.parent.nativePath;
 				}
 			} catch (e:Error) {
 				trace(e);
 			}
+			
+			updateDataGridBinding();
 		}
 		
 		public function restoreFromMeta():Boolean {
-			_controller.updateXMPCapabilities(activeDocument);
 			var xmpView: AppModelXMPView = AppModelXMPView.fromXMPSerializedView(_controller.getMetadata());
 			if (xmpView) {
 				this.fromXMPView(xmpView);
@@ -136,6 +131,7 @@ package managers
 			item.assetComposition = assetComposition;
 			dataGridProvider.addItem(item);
 			save();
+			updateDataGridBinding();
 		}
 		
 		private function getFilename(customName:String = ""):String {
@@ -161,24 +157,9 @@ package managers
 			}
 		}
 		
-		private function lockSavingOnUpdates():void {
-			_lockedSavingOnUpdates = true;
-		}
-		
-		private var _lockedSavingOnUpdates:Boolean  = false;
-		
-		private function unlockSavingOnUpdates():void {
-			_lockedSavingOnUpdates = false;
-		}
-		
 		public function clean():void {
-			lockSavingOnUpdates();
-//			dataGridProvider.disableAutoUpdate();
-//			dataGridProvider.removeAll();
 			dataGridProvider = new ArrayCollection();
 			defaultPathToPublish = '';
-//			dataGridProvider.enableAutoUpdate();
-			unlockSavingOnUpdates();
 		}
 		
 		private function getFlattened():* {
@@ -202,29 +183,26 @@ package managers
 			return new AppModelXMPView(getFlattened());			
 		}
 		
-		public function gridChanged():void {
-			if (!_lockedSavingOnUpdates) save();
+		private function restoreModel(o:*):void {
+			for (var i:Number = 0; i < o.publishingItems.length; i++) {
+				const po:* = o.publishingItems[i];
+				
+				var item:PublishingItem = new PublishingItem();
+				item.activeDocument = activeDocument;
+				item.assetComposition = _controller.restoreAssetComposition(po.assetComposition);
+				item.fromPlainObject(po);
+				
+				dataGridProvider.addItem(item);
+			}
 		}
 		
 		public function fromXMPView(xmpModelView:AppModelXMPView):void {
 			var o:* = xmpModelView.dataObject;
 			
 			clean();
-//			lockSavingOnUpdates();
-//			dataGridProvider.disableAutoUpdate();
 			
 			if (o.formatVersion == FORMAT_VERSION) {
-				for (var i:Number = 0; i < o.publishingItems.length; i++) {
-					const po:* = o.publishingItems[i];
-					
-					var item:PublishingItem = new PublishingItem();
-					item.activeDocument = activeDocument;
-					item.assetComposition = _controller.restoreAssetComposition(po.assetComposition);
-					item.fromPlainObject(po);
-					
-					dataGridProvider.addItem(item);
-				}				
-				
+				restoreModel(o);			
 			} else { //todo: remove after alpha-testing (may be)
 				var pathToPublish:String = o.pathToPublish;
 				
@@ -257,17 +235,17 @@ package managers
 				}				
 			}
 			
-//			dataGridProvider.enableAutoUpdate();
-//			unlockSavingOnUpdates();
+			updateDataGridBinding();
+		}
+		
+		private function updateDataGridBinding():void {
 			dispatchEvent(new Event("dataGridProviderChanged"));
-			
 		}
 		
 		
 		public function save():void {
 			if (!_controller) return;
 			activeDocument.saved = false;
-			_controller.updateXMPCapabilities(activeDocument);
 			_controller.saveMetadata(toXMPView().string);
 		}
 	}

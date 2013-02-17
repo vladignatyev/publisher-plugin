@@ -161,18 +161,20 @@ package managers
 		/**
 		 * Необходимо вызывать этот метод каждый раз после сохранения метаданных и при загрузке нового документа
 		 * */
-		public function updateXMPCapabilities(activeDocument:*):void {
-			if (!activeDocument) return;
+		private function updateXMPCapabilities(activeDocument:*):void { 
 			xmpContext = new PublisherNamespaceXMPContext((activeDocument as Document).XMPString);
 		}
 		
 		public function saveMetadata(modelMetaData:String):void {
+			updateXMPCapabilities(app.activeDocument);
 			xmpContext.publisherNamespace.assetsMetadata = modelMetaData;
 			app.activeDocument.XMPString = xmpContext.serializeToXML();
 			app.activeDocument.saved = false;
 		}
 		
 		public function getMetadata():String {
+			if (!app.activeDocument) return null; 
+			updateXMPCapabilities(app.activeDocument);
 			return xmpContext.publisherNamespace.assetsMetadata;
 		}
 		
