@@ -33,8 +33,7 @@ package managers
 		private var _controller:IllustratorController;
 		
 		public function AppModel() {
-			dataGridProvider = new ArrayCollection();
-			state = STATE_DISABLED;
+			clean();
 		}
 
 		public function set controller(value:IllustratorController):void {
@@ -57,7 +56,7 @@ package managers
 		public var defaultPathToPublish:String;
 		
 		[Bindable(event="dataGridProviderChanged")]
-		public var dataGridProvider:ArrayCollection;
+		public var dataProvider:ArrayCollection;
 
 		[Bindable]
 		public var state:String;
@@ -65,13 +64,13 @@ package managers
 		public function initialize():void {
 			clean();
 			
-			if (!activeDocument) {
-				state = STATE_DISABLED;
-			} else if (!restoreFromMeta()){
-				state = STATE_WELCOME;
-			} else {
-				state = STATE_NORMAL;
-			}
+			if (activeDocument){
+				if(!restoreFromMeta()){
+					state = STATE_WELCOME;
+				} else {
+					state = STATE_NORMAL;
+				}
+			} 
 		}
 						
 		public function getCurrentAssetComposition():AssetComposition
@@ -98,7 +97,7 @@ package managers
 				var artboard:Artboard = artboards.index(i);
 				var currentComposition:AssetComposition = getCurrentAssetComposition();
 				currentComposition.setArtboard(i);
-				addNewDefaultFile(currentComposition);
+				addNewDefaultFile();
 			}
 			
 			state = STATE_NORMAL;
@@ -129,7 +128,7 @@ package managers
 			const item:PublishingItem = new PublishingItem();
 			item.activeDocument = activeDocument;
 			item.assetComposition = assetComposition;
-			dataGridProvider.addItem(item);
+			dataProvider.addItem(item);
 			save();
 			updateDataGridBinding();
 		}
@@ -138,32 +137,37 @@ package managers
 			var name:String = customName;
 			if (name == "") {
 				var n:String = "1";
-				if (dataGridProvider) {
-					n = (dataGridProvider.length + 1).toString();
+				if (dataProvider) {
+					n = (dataProvider.length + 1).toString();
 				}
 				name = n;
 			}
 			return name;
 		}
 		
-		public function addNewDefaultFile(assetComposition:AssetComposition):void {
- 			addNewFile(getFilename(), assetComposition);
+		public function getAssetCompositionByIndex(index:uint):AssetComposition {
+			return (dataProvider.getItemAt(index) as PublishingItem).assetComposition;
+		}
+		
+		public function addNewDefaultFile():void {
+ 			addNewFile(getFilename(), getCurrentAssetComposition());
 		}
 		
 		public function deleteFileByIndex(index:Number):void {
-			if (dataGridProvider.length > 0) {
-				dataGridProvider.removeItemAt(index);
+			if (dataProvider.length > 0) {
+				dataProvider.removeItemAt(index);
 				save();
 			}
 		}
 		
 		public function clean():void {
-			dataGridProvider = new ArrayCollection();
+			state = STATE_DISABLED;
+			dataProvider = new ArrayCollection();
 			defaultPathToPublish = '';
 		}
 		
 		private function getFlattened():* {
-			var length:int = dataGridProvider.length;
+			var length:int = dataProvider.length;
 			
 			var result:* = {
 				"formatVersion": FORMAT_VERSION,
@@ -171,7 +175,7 @@ package managers
 			};
 			
 			for (var i:Number = 0; i < length; i++) {
-				var item: PublishingItem = dataGridProvider.getItemAt(i) as PublishingItem;
+				var item: PublishingItem = dataProvider.getItemAt(i) as PublishingItem;
 				result.publishingItems[i] = item.toPlainObject();
 				result.publishingItems[i]["assetComposition"] = _controller.flattenAssetComposition(item.assetComposition);
 			}
@@ -192,7 +196,7 @@ package managers
 				item.assetComposition = _controller.restoreAssetComposition(po.assetComposition);
 				item.fromPlainObject(po);
 				
-				dataGridProvider.addItem(item);
+				dataProvider.addItem(item);
 			}
 		}
 		
@@ -231,7 +235,7 @@ package managers
 					item.type = type;
 					item.name = filename;
 
-					dataGridProvider.addItem(item);
+					dataProvider.addItem(item);
 				}				
 			}
 			
@@ -244,7 +248,6 @@ package managers
 		
 		
 		public function save():void {
-			if (!_controller) return;
 			activeDocument.saved = false;
 			_controller.saveMetadata(toXMPView().string);
 		}

@@ -64,8 +64,8 @@ package managers
 		public function export(items:Array):ExportOperation {
 			const itemsToPublish:Array = [];
 			
-			for (var i:int=0; i < model.dataGridProvider.length; i++) {
-				const item:PublishingItem = model.dataGridProvider.getItemAt(i) as PublishingItem;
+			for (var i:int=0; i < model.dataProvider.length; i++) {
+				const item:PublishingItem = model.dataProvider.getItemAt(i) as PublishingItem;
 				if (item.isPublished) {
 					itemsToPublish.push(item);
 				}

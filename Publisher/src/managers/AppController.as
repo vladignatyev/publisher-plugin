@@ -72,15 +72,13 @@ package managers
 		private function initCSXSLifecycle():void {
 			lifeCycle = AppLifeCycle.getInstance();
 			lifeCycle.addEventListener("documentAfterActivate", documentActivated);
+			lifeCycle.addEventListener("documentBeforeActivate", documentActivated);
 			lifeCycle.addEventListener("documentAfterDeactivate", documentDeactivatedHandler);
 		}
 		
 		
 		private function documentDeactivatedHandler(event:CSXSEvent):void {
 			dispatchEvent(event.clone());
-			model.state = 'disabled';
-			//			model.clean();
-
 		}		
 		
 		
@@ -144,10 +142,6 @@ package managers
 			return instance;
 		}
 		
-		public function newFile (): void {
-			model.addNewDefaultFile(getCurrentAssetComposition());
-		}
-		
 		public function deleteSelectedFile(selectedFileItem:*, selectedFileIndex:Number): void {
 			if (selectedFileIndex > -1) model.deleteFileByIndex(selectedFileIndex);
 		}
@@ -194,40 +188,26 @@ package managers
 			appController.pushAssetState();
 		}
 		
-		public function getCurrentAssetComposition():AssetComposition
-		{
-			return model.getCurrentAssetComposition();
-		}
 		
 		public function changeCompositionToLastCreated():void {
-			changeCompositionToIndex(model.dataGridProvider.length - 1);
+			changeCompositionToIndex(model.dataProvider.length - 1);
 		}
-		
-		public function getAssetCompositionByIndex(index:Number):AssetComposition {
-			return (model.dataGridProvider.getItemAt(index) as PublishingItem).assetComposition;
-		}
-		
+				
 		public function changeCompositionToIndex(index:Number):void {
-			fitViewportToAssetComposition(getAssetCompositionByIndex(index));
+			fitViewportToAssetComposition(model.getAssetCompositionByIndex(index));
 		}
 		
 		public function updateNthAssetWithCurrentComposition(i:Number):void {
-			var item:PublishingItem = model.dataGridProvider.getItemAt(i) as PublishingItem;
+			var item:PublishingItem = model.dataProvider.getItemAt(i) as PublishingItem;
 			if (item) {
-				item.assetComposition = getCurrentAssetComposition();
+				item.assetComposition = model.getCurrentAssetComposition();
 			}
 		}
 		
 		public function documentActivated(event:CSXSEvent = null):void {
 			dispatchEvent(event.clone());
-			
-			if (!appController.activeDocument) return;		
-			if (appController.activeDocument == model.activeDocument) return;
-			
 			model.initialize();
 		}
-		
-		public var fileListDG:DataGrid;
 		
 		public function appActivated():void {
 		}
