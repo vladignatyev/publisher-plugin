@@ -15,6 +15,7 @@ package managers
 	import managers.data.PublishingItem;
 	
 	import mx.collections.ArrayCollection;
+	import mx.events.CollectionEvent;
 	import mx.events.PropertyChangeEvent;
 
 	public class AppModel extends EventDispatcher
@@ -161,8 +162,14 @@ package managers
 		
 		public function clean():void {
 			state = STATE_DISABLED;
+			if (dataProvider) dataProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, dataProviderChangeHandler);
 			dataProvider = new ArrayCollection();
+			dataProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, dataProviderChangeHandler);
 			defaultPathToPublish = '';
+		}
+		
+		private function dataProviderChangeHandler(event:CollectionEvent):void {
+
 		}
 		
 		private function getFlattened():* {

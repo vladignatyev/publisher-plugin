@@ -148,10 +148,9 @@ package managers
 			model.clean();
 		}
 		
-		public function export():ExportOperation 
+		public function export(items:Array):ExportOperation 
 		{
-//			return appController.export();
-			return null;
+			return appController.export(items);
 		}
 		
 		

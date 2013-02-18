@@ -64,10 +64,12 @@ package managers
 		public function export(items:Array):ExportOperation {
 			const itemsToPublish:Array = [];
 			
-			for (var i:int=0; i < model.dataProvider.length; i++) {
-				const item:PublishingItem = model.dataProvider.getItemAt(i) as PublishingItem;
-				if (item.isPublished) {
-					itemsToPublish.push(item);
+			for (var i:int=0; i < items.length; i++) {
+				if (items[i] is PublishingItem) {
+					
+					if ((items[i] as PublishingItem).isPublished) {
+						itemsToPublish.push(items[i]);
+					}
 				}
 			}
 			

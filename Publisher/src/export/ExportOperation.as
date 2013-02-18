@@ -45,7 +45,8 @@ package export
 			const item:PublishingItem = items.pop() as PublishingItem;
 			controller.setAssetState(item.assetComposition);
 			
-			const file:File =  new File([item.pathToPublish, item.systemFilename].join('/'));
+			const filePath:String = [item.pathToPublish.replace(/\/$/g, ''), item.systemFilename].join('/');
+			const file:File =  new File(filePath);
 			controller.activeDocument.exportFile(file, item.exportType, item.exportOptions);
 			
 			if (item.exportAs2X) {

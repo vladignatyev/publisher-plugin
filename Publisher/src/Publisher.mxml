@@ -4,10 +4,12 @@
 				width="100%" height="100%" minWidth="250" minHeight="240"
 				applicationComplete="onApplicationComplete()" backgroundColor="0x000000"
 				historyManagementEnabled="false" horizontalScrollPolicy="off"
-				layout="{ContainerLayout.ABSOLUTE}" usePreloader="false">
+				layout="{ContainerLayout.ABSOLUTE}" usePreloader="false" xmlns:utils="utils.*" xmlns:collections="mx.collections.*">
+	
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.csawlib.illustrator.Illustrator;
+			import com.adobe.csxs.core.csxs_internal;
 			import com.adobe.illustrator.*;
 			
 			import export.ExportOperation;
@@ -19,10 +21,16 @@
 			import managers.data.PublishingItem;
 			
 			import mx.collections.ArrayCollection;
+			import mx.collections.Grouping;
+			import mx.collections.GroupingField;
+			import mx.collections.HierarchicalCollectionView;
+			import mx.collections.IViewCursor;
 			import mx.controls.ToolTip;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.core.ContainerLayout;
+			import mx.core.mx_internal;
 			import mx.events.AIREvent;
+			import mx.events.AdvancedDataGridEvent;
 			import mx.events.CollectionEvent;
 			import mx.events.DataGridEvent;
 			import mx.events.FlexEvent;
@@ -83,8 +91,24 @@
 			
 			protected function publishButtonClick(event:MouseEvent):void
 			{
-				// TODO Auto-generated method stub
-				publishingOperation = controller.export();
+				var itemsToPublish:Array = [];
+				if (grid.selectedItems.length > 0) {
+					for (var i:int = 0; i < grid.selectedItems.length; i++) {
+						if (grid.selectedItems[i] is PublishingItem) { // если файл
+							itemsToPublish.push(grid.selectedItems[i]);
+						} else { // если папка
+							for (var j:int = 0; j < grid.selectedItems[i].children.length; j++) {
+								itemsToPublish.push((grid.selectedItems[i].children as ArrayCollection).getItemAt(j));	
+							}
+						}
+					}
+					//export selected
+					publishingOperation = controller.export(itemsToPublish);
+				} else {
+					//export all
+					publishingOperation = controller.export(model.dataProvider.source);
+				}
+				
 				exportProgress.source = publishingOperation;
 				publishingOperation.publish();
 			}
@@ -111,8 +135,38 @@
 				}
 			}
 			
+			protected function grid_itemEditEndHandler(event:AdvancedDataGridEvent):void
+			{
+				trace(grid.editedItemRenderer.data);
+				trace(event.itemRenderer.data);
+				
+				setTimeout(updatePathToPublish, 100);
+				
+				//gc.currentGroups[0].name = '/tmp'  =>      gc.currentGroups[0].children
+			}
+			
+			protected function updatePathToPublish():void {
+				
+//				gc.currentGroups[0].name = '/tmp'  =>      gc.currentGroups[0].children
+				for (var i:int = 0; i < gc.currentGroups.length; i++) {
+					if (gc.currentGroups[i].name)
+					for (var j:int = 0; j < gc.currentGroups[i].children.length; j++) {
+						gc.currentGroups[i].children[j].pathToPublish = gc.currentGroups[i].name; 
+					}
+				}
+				model.save();
+			}
+			
+			protected function grid_itemEditBeginningHandler(event:AdvancedDataGridEvent):void
+			{
+				// TODO Auto-generated method stub
+				trace(event.item);
+			}
+			
 		]]>
 	</mx:Script>
+	
+	
 	
 	<mx:Style source="assets/css/style.css"/>
 
@@ -134,8 +188,6 @@
 		</mx:VBox>
 	</mx:Box>
 	
-
-	
 	<mx:VBox id="mainView" visible="{model &amp;&amp; (model.state == AppModel.STATE_NORMAL)}"
 			 width="100%" height="100%" includeInLayout="{this.visible}">
 		
@@ -144,21 +196,26 @@
 
 		
 		<mx:VBox width="100%" height="100%" verticalGap="3">
+			
 			<mx:AdvancedDataGrid id="grid" width="100%" height="100%" dragEnabled="true"
 								 dragMoveEnabled="true" dropEnabled="true" editable="true"
 								 itemClick="grid_itemClickHandler(event)"
 								 doubleClickEnabled="true" 
 								 itemDoubleClick="grid_itemDoubleClickHandler(event)"
 								 sortItemRenderer="{null}"
+								 selectionMode="multipleRows"
+								 itemEditEnd="grid_itemEditEndHandler(event)"
+								 itemEditBeginning="grid_itemEditBeginningHandler(event)"
 								 >
 				<mx:dataProvider>
-					<mx:GroupingCollection id="gc" source="{model.dataProvider}">
-						<mx:grouping>
-							<mx:Grouping>
-								<mx:GroupingField name="pathToPublish"/>
-							</mx:Grouping>
-						</mx:grouping>
-					</mx:GroupingCollection>
+					<collections:MyGroupingCollection id="gc" source="{model.dataProvider}"
+													  >
+						<mx:Grouping>
+							<mx:fields>
+								<mx:GroupingField name="pathToPublish" />
+							</mx:fields>
+						</mx:Grouping>
+						</collections:MyGroupingCollection>
 				</mx:dataProvider>
 				<mx:groupedColumns>   
 					<mx:AdvancedDataGridColumn id="screenNameColumn" dataField="name"
