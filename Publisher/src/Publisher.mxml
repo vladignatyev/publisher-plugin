@@ -135,19 +135,8 @@
 				}
 			}
 			
-			protected function grid_itemEditEndHandler(event:AdvancedDataGridEvent):void
-			{
-				trace(grid.editedItemRenderer.data);
-				trace(event.itemRenderer.data);
-				
-				setTimeout(updatePathToPublish, 100);
-				
-				//gc.currentGroups[0].name = '/tmp'  =>      gc.currentGroups[0].children
-			}
-			
 			protected function updatePathToPublish():void {
 				
-//				gc.currentGroups[0].name = '/tmp'  =>      gc.currentGroups[0].children
 				for (var i:int = 0; i < gc.currentGroups.length; i++) {
 					if (gc.currentGroups[i].name)
 					for (var j:int = 0; j < gc.currentGroups[i].children.length; j++) {
@@ -161,6 +150,22 @@
 			{
 				// TODO Auto-generated method stub
 				trace(event.item);
+			}
+			
+			protected function grid_itemEditEndHandler(event:AdvancedDataGridEvent):void
+			{
+				// TODO Auto-generated method stub
+
+			}
+			
+			public function myLabelFunction(item:Object, column:AdvancedDataGridColumn):String {
+				trace(column);
+				trace(column.dataField);
+				if (item is PublishingItem) return item[column.dataField];
+				if (column.dataField == 'name')
+					return item.pathToPublish;
+				return "";
+//				return item.pathToPublish;
 			}
 			
 		]]>
@@ -204,22 +209,24 @@
 								 itemDoubleClick="grid_itemDoubleClickHandler(event)"
 								 sortItemRenderer="{null}"
 								 selectionMode="multipleRows"
-								 itemEditEnd="grid_itemEditEndHandler(event)"
-								 itemEditBeginning="grid_itemEditBeginningHandler(event)"
+								 groupItemRenderer="views.GroupedItemRenderer"
+								 labelFunction="myLabelFunction"
 								 >
 				<mx:dataProvider>
 					<collections:MyGroupingCollection id="gc" source="{model.dataProvider}"
 													  >
-						<mx:Grouping>
+						<mx:Grouping label="pathToPublish">
 							<mx:fields>
-								<mx:GroupingField name="pathToPublish" />
+								<mx:GroupingField name="pathToPublish"  />
 							</mx:fields>
 						</mx:Grouping>
 						</collections:MyGroupingCollection>
 				</mx:dataProvider>
 				<mx:groupedColumns>   
 					<mx:AdvancedDataGridColumn id="screenNameColumn" dataField="name"
-											   headerText="SCREENS ASSETS" sortable="false" />
+											   headerText="SCREENS ASSETS" sortable="false" 
+											   editorDataField="text"
+											   />
 					<mx:AdvancedDataGridColumn id="fileTypeColumn" dataField="type" editable="false"
 											   headerText="FILE TYPE" sortable="false" />
 					<mx:AdvancedDataGridColumn id="dimensionColumn" dataField="dimensionsString"

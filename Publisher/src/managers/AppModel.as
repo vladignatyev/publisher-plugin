@@ -56,7 +56,7 @@ package managers
 		
 		public var defaultPathToPublish:String;
 		
-		[Bindable(event="dataGridProviderChanged")]
+		[Bindable]
 		public var dataProvider:ArrayCollection;
 
 		[Bindable]
