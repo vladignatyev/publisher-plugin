@@ -158,14 +158,13 @@
 
 			}
 			
-			public function myLabelFunction(item:Object, column:AdvancedDataGridColumn):String {
+			public function myLabelFunction(item:Object, column:AdvancedDataGridColumn):String  {
 				trace(column);
 				trace(column.dataField);
 				if (item is PublishingItem) return item[column.dataField];
-				if (column.dataField == 'name')
+				if (column.dataField == screenNameColumn.dataField)
 					return item.pathToPublish;
-				return "";
-//				return item.pathToPublish;
+				return null;
 			}
 			
 		]]>
@@ -217,7 +216,7 @@
 													  >
 						<mx:Grouping label="pathToPublish">
 							<mx:fields>
-								<mx:GroupingField name="pathToPublish"  />
+								<mx:GroupingField name="pathToPublish" />
 							</mx:fields>
 						</mx:Grouping>
 						</collections:MyGroupingCollection>
@@ -233,6 +232,10 @@
 											   editable="false" headerText="DIMENSION"
 											   sortable="false" />
 				</mx:groupedColumns>
+				<mx:rendererProviders>
+					<mx:AdvancedDataGridRendererProvider columnIndex="0" 
+														 columnSpan="0" depth="1" renderer="views.GroupedItemRenderer" />
+				</mx:rendererProviders>
 			</mx:AdvancedDataGrid>
 			
 				
