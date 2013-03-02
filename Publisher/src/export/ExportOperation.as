@@ -34,7 +34,7 @@ package export
 		private function exportOne():void {
 			function complete():void {
 				controller.popAssetState();
-				dispatchEvent(new Event(Event.COMPLETE));
+				setTimeout(function():void {dispatchEvent(new Event(Event.COMPLETE));}, 2000);
 			}
 			
 			if (interrupted) {
@@ -60,19 +60,19 @@ package export
 			dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, totalItems - items.length, totalItems));
 			
 			if (items.length > 0) {
-				setTimeout(exportOne, 50);
+				setTimeout(exportOne, 100);
 			} else {
-				complete();	
+				setTimeout(complete, 100);
 			}
 		}
 		
 		public function publish():void {
+			
 			if (!items.length) throw new IllegalOperationError("Items to export list is empty. Please don't reuse ExportOperation object!");
-
+			dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, 0, items.length));
 			this.totalItems = items.length;
 			controller.pushAssetState();
-			dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, 0, items.length));
-			exportOne();
+			setTimeout(exportOne, 100);
 		}
 		
 		public function stop():void {

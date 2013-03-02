@@ -109,8 +109,20 @@
 					publishingOperation = controller.export(model.dataProvider.source);
 				}
 				
+				exportProgress.source = null;
 				exportProgress.source = publishingOperation;
-				publishingOperation.publish();
+				exportProgress.setProgress(0, 100.0);
+				exportProgress.visible = true;
+				setTimeout(function():void {
+					publishingOperation.publish();
+					publishingOperation.addEventListener(Event.COMPLETE, cleanupProgressBarState);
+				}, 500);
+			}
+			
+			protected function cleanupProgressBarState(event:Event):void {
+				publishingOperation.removeEventListener(Event.COMPLETE, cleanupProgressBarState);
+				exportProgress.setProgress(0, 100);
+				exportProgress.visible = false;
 			}
 			
 			protected function grid_itemClickHandler(event:ListEvent):void
@@ -196,7 +208,16 @@
 			 width="100%" height="100%" includeInLayout="{this.visible}">
 		
 		<mx:ProgressBar id="exportProgress" width="100%" height="10"
-						label="(%3%%) Published %1 files of %2" mode="event"/>
+						label="(%3%%) Published %1 files of %2" mode="event"
+						visible="false"
+						>
+			<mx:showEffect>
+				<mx:Fade duration="2000" />
+			</mx:showEffect>
+			<mx:hideEffect>
+				<mx:Fade duration="2000" />
+			</mx:hideEffect>
+			</mx:ProgressBar>
 
 		
 		<mx:VBox width="100%" height="100%" verticalGap="3">
