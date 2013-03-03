@@ -45,12 +45,15 @@ package export
 			const item:PublishingItem = items.pop() as PublishingItem;
 			controller.setAssetState(item.assetComposition);
 			
-			const filePath:String = [item.pathToPublish.replace(/\/$/g, ''), item.systemFilename].join('/');
-			const file:File =  new File(filePath);
+			const pathToPublish:File = basePath.resolvePath(item.pathToPublish);
+			if (!pathToPublish.exists) {
+				pathToPublish.createDirectory();
+			}
+			const file:File = pathToPublish.resolvePath(item.systemFilename);
 			controller.activeDocument.exportFile(file, item.exportType, item.exportOptions);
 			
 			if (item.exportAs2X) {
-				const file2x:File =  new File([item.pathToPublish, item.systemFilename2x].join('/'));
+				const file2x:File = pathToPublish.resolvePath(item.systemFilename2x);
 				const exportOptions:* = item.exportOptions;
 				exportOptions.verticalScale = 200.0;
 				exportOptions.horizontalScale = 200.0;
@@ -65,8 +68,11 @@ package export
 				setTimeout(complete, 100);
 			}
 		}
+
+		protected var basePath:File;
 		
-		public function publish():void {
+		public function publish(basePath:File):void {
+			this.basePath = basePath;
 			
 			if (!items.length) throw new IllegalOperationError("Items to export list is empty. Please don't reuse ExportOperation object!");
 			dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, 0, items.length));

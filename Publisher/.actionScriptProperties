@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<actionScriptProperties analytics="false" mainApplicationPath="Publisher.mxml" projectUUID="3094afd7-ab9b-414f-a625-6369fcf58ed3" version="10">
-  <compiler additionalCompilerArguments="-locale en_US" autoRSLOrdering="false" copyDependentFiles="true" flexSDK="Extension Builder 3.4" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="false" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="false" includeNetmonSwc="false" outputFolderPath="bin-debug" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="true" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
+<actionScriptProperties analytics="false" mainApplicationPath="Publisher.mxml" projectUUID="3094afd7-ab9b-414f-a625-6369fcf58ed3" version="11">
+  <compiler additionalCompilerArguments="-locale en_US" autoRSLOrdering="false" copyDependentFiles="true" flexSDK="Extension Builder 3.4" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="false" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="false" includeNetmonSwc="false" outputFolderPath="bin-debug" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="true" useDebugRSLSwfs="true" useFlashSDK="false" verifyDigests="true" warn="true">
     <compilerSourcePath/>
     <libraryPath defaultLinkType="1">
       <libraryPathEntry kind="4" path=""/>
@@ -14,8 +14,8 @@
       <libraryPathEntry kind="3" linkType="1" path="${CSAR}/release/xmpsns_rights.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="${CSAR}/release/MXThemeSync.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/PublisherNamespace_lib/bin/PublisherNamespace_lib.swc" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="3" linkType="1" path="/Applications/Adobe Flash Builder 4/sdks/3.5.0/frameworks/libs/datavisualization.swc" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="3" linkType="1" path="/Applications/Adobe Flash Builder 4.6/sdks/3.6.0/frameworks/locale/en_US/datavisualization_rb.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="/Users/ignatev/Documents/Coding/AdvancedDataGridSWC/datavisualization_rb.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="/Users/ignatev/Documents/Coding/AdvancedDataGridSWC/datavisualization.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>
@@ -23,6 +23,7 @@
     <application path="Publisher.mxml"/>
   </applications>
   <modules/>
+  <workers/>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
 </actionScriptProperties>

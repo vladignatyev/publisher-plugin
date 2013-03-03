@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
-				xmlns:csxs="com.adobe.csxs.core.*"
-				width="100%" height="100%" minWidth="250" minHeight="240"
-				applicationComplete="onApplicationComplete()" backgroundColor="0x000000"
-				historyManagementEnabled="false" horizontalScrollPolicy="off"
-				layout="{ContainerLayout.ABSOLUTE}" usePreloader="false" xmlns:utils="utils.*" xmlns:collections="mx.collections.*">
+<csxs:CSXSWindowedApplication 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:csxs="com.adobe.csxs.core.*"
+	xmlns:utils="utils.*" 
+	xmlns:collections="mx.collections.*"
+	minWidth="250" minHeight="240"
+	applicationComplete="onApplicationComplete()" backgroundColor="0x000000"
+	historyManagementEnabled="false"
+	layout="absolute" >
 	
 	<mx:Script>
 		<![CDATA[
@@ -39,7 +42,7 @@
 			
 			[Bindable]
 			private var model:AppModel = AppModel.getInstance(); 
-			private var controller:AppController
+			private var controller:AppController;
 			
 			private function onApplicationComplete():void{
 				controller = AppController.getInstance();
@@ -114,7 +117,7 @@
 				exportProgress.setProgress(0, 100.0);
 				exportProgress.visible = true;
 				setTimeout(function():void {
-					publishingOperation.publish();
+					publishingOperation.publish(model.activeDocument.fullName.parent);
 					publishingOperation.addEventListener(Event.COMPLETE, cleanupProgressBarState);
 				}, 500);
 			}
@@ -181,8 +184,6 @@
 			
 		]]>
 	</mx:Script>
-	
-	
 	
 	<mx:Style source="assets/css/style.css"/>
 
@@ -281,4 +282,5 @@
 				</mx:HBox>
 		</mx:VBox>
 	</mx:VBox>
-</mx:Application>
+</csxs:CSXSWindowedApplication>
+	
