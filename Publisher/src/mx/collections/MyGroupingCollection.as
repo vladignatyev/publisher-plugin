@@ -1108,14 +1108,15 @@ package mx.collections
 				fields.push(sortField);
 			}
 			
-			oldSort = source.sort;
-			source.sort = new Sort();
-			
-			// Set the compare function
-			if (grouping.compareFunction != null)
-				source.sort.compareFunction = grouping.compareFunction;
-			
-			source.sort.fields = fields;
+// NOTE: фиксит проблему с неправильным порядком вновь добавляемых элементов			
+//			oldSort = source.sort;
+//			source.sort = new Sort();
+//			
+//			// Set the compare function
+//			if (grouping.compareFunction != null)
+//				source.sort.compareFunction = grouping.compareFunction;
+//			
+//			source.sort.fields = fields;
 			
 			var refreshed:Boolean = source.refresh();
 			if (!refreshed)

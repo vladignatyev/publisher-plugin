@@ -127,6 +127,8 @@ package managers
 		
 		public function addNewFile(name:String, assetComposition:AssetComposition):void {
 			const item:PublishingItem = new PublishingItem();
+			item.name = name;
+			item.pathToPublish = './';
 			item.activeDocument = activeDocument;
 			item.assetComposition = assetComposition;
 			dataProvider.addItem(item);
@@ -154,7 +156,7 @@ package managers
  			addNewFile(getFilename(), getCurrentAssetComposition());
 		}
 		
-		public function deleteFileByIndex(item:PublishingItem):void {
+		public function deleteFile(item:PublishingItem):void {
 			if (dataProvider.length == 0) return;
 			dataProvider.removeItemAt(dataProvider.getItemIndex(item));
 			save();
