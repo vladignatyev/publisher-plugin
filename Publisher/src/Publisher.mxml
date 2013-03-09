@@ -4,12 +4,14 @@
 	xmlns:csxs="com.adobe.csxs.core.*"
 	xmlns:utils="utils.*" 
 	xmlns:collections="mx.collections.*"
-	minWidth="250" minHeight="240"
-	applicationComplete="onApplicationComplete()" backgroundColor="0xffffff"
+	applicationComplete="onApplicationComplete()"
 	historyManagementEnabled="false"
 	layout="absolute"
-	>
+	usePreloader="false" 
+	backgroundColor="0xFFFFFF"
+	backgroundAlpha="1.0"
 	
+	>
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.csawlib.illustrator.Illustrator;
@@ -50,6 +52,7 @@
 			private var controller:AppController;
 			
 			private function onApplicationComplete():void{
+				
 				controller = AppController.getInstance();
 				model.addEventListener("dataGridProviderChanged", dataGridProviderChangedHandler);
 				
@@ -63,7 +66,7 @@
 			}
 			
 			protected function dataGridProviderChangedHandler (event:Event):void {
-				gc.refresh();
+//				gc.refresh();
 				grid.expandAll();
 			}
 			
@@ -195,13 +198,13 @@
 					return item.pathToPublish;
 				return null;
 			}
-			
 		
 		]]>
 	</mx:Script>
 	
 	<mx:Style source="assets/css/style.css"/>
 
+	
 	<mx:Box id="disabledView" visible="{!model || model.state == AppModel.STATE_DISABLED}"
 			width="100%" height="100%" horizontalCenter="0" includeInLayout="{this.visible}"
 			verticalCenter="0">
@@ -221,24 +224,16 @@
 	</mx:Box>
 	
 	<mx:VBox id="mainView" visible="{model &amp;&amp; (model.state == AppModel.STATE_NORMAL)}"
-			 width="100%" height="100%" includeInLayout="{this.visible}">
-		
-		<mx:ProgressBar id="exportProgress" width="100%" height="10"
-						label="(%3%%) Published %1 files of %2" mode="event"
-						visible="false"
-						>
-			<mx:showEffect>
-				<mx:Fade duration="2000" />
-			</mx:showEffect>
-			<mx:hideEffect>
-				<mx:Fade duration="2000" />
-			</mx:hideEffect>
-			</mx:ProgressBar>
-
-		
-		<mx:VBox width="100%" height="100%" verticalGap="3">
+			 width="100%" height="100%" includeInLayout="{this.visible}"
+			 verticalGap="0"
+			 horizontalGap="0"
+			 paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+		<mx:VBox width="100%" height="100%" verticalGap="0"
+				 horizontalGap="0"
+				 paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
 			
 			<mx:AdvancedDataGrid id="grid" 
+								 borderSkin="{null}"
 								 width="100%" height="100%" 
 								 dragEnabled="true"
 								 dragMoveEnabled="true" 
@@ -251,7 +246,11 @@
 								 selectionMode="multipleRows"
 								 groupItemRenderer="views.GroupedItemRenderer"
 								 labelFunction="myLabelFunction"
-								 
+								 paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0"
+								 headerRenderer="skins.DataGridHeaderRenderer"
+								 verticalGridLines="false"
+								 headerStyleName="HeaderStyle"
+								 headerColors="[0xFFFFFF, 0xFFFFFF]"
 								 >
 				<mx:dataProvider>
 					<collections:MyGroupingCollection id="gc" source="{model.dataProvider}"
@@ -265,7 +264,7 @@
 				</mx:dataProvider>
 				<mx:groupedColumns>   
 					<mx:AdvancedDataGridColumn id="screenNameColumn" dataField="name"
-											   headerText="SCREENS ASSETS" sortable="false" 
+											   headerText="SCREEN or  ASSET" sortable="false" 
 											   editorDataField="text"
 											   />
 					<mx:AdvancedDataGridColumn id="fileTypeColumn" dataField="type" editable="false"
@@ -279,28 +278,52 @@
 														 columnSpan="0" depth="1" renderer="views.GroupedItemRenderer" />
 				</mx:rendererProviders>
 			</mx:AdvancedDataGrid>
-			
-				
-				<mx:HBox width="100%" horizontalGap="2" paddingBottom="1">
-					<mx:Button width="80" height="16" label="Publish"
-							   click="publishButtonClick(event)" toolTip="Publish assets"/>
 
-					<mx:Spacer width="100%"/>
+			<mx:ProgressBar id="exportProgress" width="100%" height="10"
+							label="(%3%%) Published %1 files of %2" mode="event"
+							visible="false"
+							>
+				<mx:showEffect>
+					<mx:Fade duration="2000" />
+				</mx:showEffect>
+				<mx:hideEffect>
+					<mx:Fade duration="2000" />
+				</mx:hideEffect>
+			</mx:ProgressBar>
+
+			
+				<mx:Canvas width="100%" height="28" styleName="bottomPanel">
 					
-					<mx:Button id="removeSelectedAssetButton" width="30" height="16"
-							   click="removeSelectedAssetButton_clickHandler(event)"
-							   toolTip="Remove File" />
+					<mx:Canvas width="100%" height="100%" backgroundAlpha="1.0" >
+						<mx:HBox width="100%" horizontalGap="2" height="27" backgroundAlpha="0.0">
+							
+							
+							<mx:Button width="80" height="16" label="Publish"
+									   click="publishButtonClick(event)" toolTip="Publish assets"/>
+							
+							<mx:Spacer width="100%"/>
+							
+							<mx:Button id="removeSelectedAssetButton" width="30" height="16"
+									   click="removeSelectedAssetButton_clickHandler(event)"
+									   toolTip="Remove File" />
+							
+							<mx:Button id="addNewAssetButton" width="30" height="16"
+									   click="addNewAsset_clickHandler(event)"
+									   disabledSkin="@Embed(source='assets/icons/new_disabled.png')"
+									   downSkin="@Embed(source='assets/icons/new_down.png')"
+									   overSkin="@Embed(source='assets/icons/new_over.png')"
+									   upSkin="@Embed(source='assets/icons/new.png')"
+									   toolTip="New File" />
+							<mx:Spacer width="24"/>
+						</mx:HBox>
+					</mx:Canvas>
 					
-					<mx:Button id="addNewAssetButton" width="30" height="16"
-							   click="addNewAsset_clickHandler(event)"
-							   disabledSkin="@Embed(source='assets/icons/new_disabled.png')"
-							   downSkin="@Embed(source='assets/icons/new_down.png')"
-							   overSkin="@Embed(source='assets/icons/new_over.png')"
-							   upSkin="@Embed(source='assets/icons/new.png')"
-							   toolTip="New File" />
-					<mx:Spacer width="24"/>
-				</mx:HBox>
-		</mx:VBox>
+					<mx:Canvas width="100%" height="1" backgroundAlpha="1.0" backgroundColor="0xac4f44" />
+					
+					
+
+				</mx:Canvas>
+						</mx:VBox>
 	</mx:VBox>
 </mx:Application>
 	

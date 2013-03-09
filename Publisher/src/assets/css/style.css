@@ -1,5 +1,8 @@
 /* CSS file */
 
+@namespace mx "http://www.adobe.com/2006/mxml";
+@namespace skins "skins";
+
 ToolTip { 
 	cornerRadius: 0;
 	color: #000000;
@@ -13,14 +16,39 @@ ToolTip {
 }
 
 
-DataGrid {
-	headerStyleName: gridHeader;
+mx|AdvancedDataGrid {
+	defaultLeafIcon:    ClassReference(null);
+	folderOpenIcon:     Embed(source='assets/icons/folder.png');
+	folderClosedIcon:   Embed(source='assets/icons/folder.png');
 	headerSeparatorSkin: ClassReference("mx.skins.ProgrammaticSkin");
+	backgroundSkin: ClassReference(null);
+	fontWeight:         normal;
+	fontSize:           9px;
+	alternatingItemColors: #FFFFFF, #FFFFFF;
+	indentation: 0;
+	paddingTop: 10px;
+	paddingLeft: 0px;
+	
 }
 
-.gridHeader {
-	fontWeight: 		normal;
-	fontSize:			9pt;
-	color:				#808080;
-	backgroundColor:	#FFFFFF;
+.bottomPanel {
+	borderStyle: applicationControlBar; 
+	fillColors: #FF8466, #FF5533; 
+	fillAlphas: 1.0, 1.0; 
+	highlightAlphas: 0, 0; 
+	
+}
+
+.HeaderStyle {
+	fontAntiAliasType: advanced;
+	fontWeight:normal;
+	letterSpacing:-1;
+	kerning:true;
+	fontSharpness:0;
+	fontSize: 9px;
+	color: #808080;
+	textColor:#808080;
+	paddingLeft: 4px;
+	paddingTop: 0px;
+	backgroundGradientColors: #FFFFFF, #FFFFFF;
 }

@@ -5,9 +5,13 @@ package managers
 	import com.adobe.csxs.core.CSXSInterface;
 	import com.adobe.csxs.events.CSXSEvent;
 	import com.adobe.csxs.events.MenuClickEvent;
+	import com.adobe.csxs.types.AntiAliasLevel;
 	import com.adobe.csxs.types.AppSkinInfo;
+	import com.adobe.csxs.types.ColorType;
 	import com.adobe.csxs.types.HostEnvironment;
+	import com.adobe.csxs.types.RGBColor;
 	import com.adobe.csxs.types.SyncRequestResult;
+	import com.adobe.csxs.types.UIColor;
 	import com.adobe.illustrator.Application;
 	
 	import export.ExportOperation;
