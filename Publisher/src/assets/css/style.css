@@ -28,15 +28,13 @@ mx|AdvancedDataGrid {
 	indentation: 0;
 	paddingTop: 10px;
 	paddingLeft: 0px;
-	
 }
 
 .bottomPanel {
 	borderStyle: applicationControlBar; 
 	fillColors: #FF8466, #FF5533; 
 	fillAlphas: 1.0, 1.0; 
-	highlightAlphas: 0, 0; 
-	
+	highlightAlphas: 0, 0;
 }
 
 .HeaderStyle {
@@ -49,6 +47,8 @@ mx|AdvancedDataGrid {
 	color: #808080;
 	textColor:#808080;
 	paddingLeft: 4px;
-	paddingTop: 0px;
+	paddingTop: 3px;
 	backgroundGradientColors: #FFFFFF, #FFFFFF;
+	height: 19px;
 }
+

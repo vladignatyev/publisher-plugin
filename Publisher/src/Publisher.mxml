@@ -251,6 +251,8 @@
 								 verticalGridLines="false"
 								 headerStyleName="HeaderStyle"
 								 headerColors="[0xFFFFFF, 0xFFFFFF]"
+								 rowHeight="24"
+								 verticalAlign="middle"
 								 >
 				<mx:dataProvider>
 					<collections:MyGroupingCollection id="gc" source="{model.dataProvider}"
@@ -298,23 +300,51 @@
 						<mx:HBox width="100%" horizontalGap="2" height="27" backgroundAlpha="0.0">
 							
 							
-							<mx:Button width="80" height="16" label="Publish"
-									   click="publishButtonClick(event)" toolTip="Publish assets"/>
+							<mx:Button label=""
+									   width="71" height="28"
+									   click="publishButtonClick(event)" toolTip="Publish assets"
+									   disabledSkin="@Embed(source='assets/icons/publish_btn.png')"
+									   downSkin="@Embed(source='assets/icons/publish_btn.png')"
+									   overSkin="@Embed(source='assets/icons/publish_btn_over.png')"
+									   upSkin="@Embed(source='assets/icons/publish_btn.png')"
+									   useHandCursor="true"
+									   />
 							
 							<mx:Spacer width="100%"/>
 							
-							<mx:Button id="removeSelectedAssetButton" width="30" height="16"
-									   click="removeSelectedAssetButton_clickHandler(event)"
-									   toolTip="Remove File" />
 							
-							<mx:Button id="addNewAssetButton" width="30" height="16"
+							<mx:Button id="addNewFolderButton" width="24" height="28"
+									   disabledSkin="@Embed(source='assets/icons/folder_24x28.png')"
+									   downSkin="@Embed(source='assets/icons/folder_24x28.png')"
+									   overSkin="@Embed(source='assets/icons/folder_24x28.png')"
+									   upSkin="@Embed(source='assets/icons/folder_24x28.png')"
+									   toolTip="New Folder"
+									   alpha="0.75"
+									   useHandCursor="true"
+									   />
+							
+							<mx:Button id="addNewAssetButton" width="24" height="28"
 									   click="addNewAsset_clickHandler(event)"
-									   disabledSkin="@Embed(source='assets/icons/new_disabled.png')"
-									   downSkin="@Embed(source='assets/icons/new_down.png')"
-									   overSkin="@Embed(source='assets/icons/new_over.png')"
-									   upSkin="@Embed(source='assets/icons/new.png')"
-									   toolTip="New File" />
-							<mx:Spacer width="24"/>
+									   disabledSkin="@Embed(source='assets/icons/new24x28.png')"
+									   downSkin="@Embed(source='assets/icons/new24x28.png')"
+									   overSkin="@Embed(source='assets/icons/new24x28.png')"
+									   upSkin="@Embed(source='assets/icons/new24x28.png')"
+									   toolTip="New File"
+									   alpha="0.75"
+									   useHandCursor="true"
+									   />
+							
+							<mx:Button id="removeSelectedAssetButton" width="24" height="28"
+									   click="removeSelectedAssetButton_clickHandler(event)"
+									   disabledSkin="@Embed(source='assets/icons/trash24x28.png')"
+									   downSkin="@Embed(source='assets/icons/trash24x28.png')"
+									   overSkin="@Embed(source='assets/icons/trash24x28.png')"
+									   upSkin="@Embed(source='assets/icons/trash24x28.png')"
+									   toolTip="Remove File"
+									   alpha="0.75"
+									   useHandCursor="true"
+									   />
+							
 						</mx:HBox>
 					</mx:Canvas>
 					
